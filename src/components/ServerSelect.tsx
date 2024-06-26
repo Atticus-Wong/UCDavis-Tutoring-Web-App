@@ -6,11 +6,11 @@ import FormControl from '@mui/material/FormControl';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
 import { getDocs } from 'firebase/firestore';
 import { serverBackupsCol } from '../utils/firebase';
-import { useSelectedServer } from '../utils/atom';
+import { useSelectedServer, useServersFromFirebase } from '../utils/atom';
 
 export default function ServerSelect() {
   const [selectedServer, setSelectedServer] = useSelectedServer();
-  const [servers, setServers] = useState<Server[]>();
+  const [servers, setServers] = useServersFromFirebase();
 
   useEffect(() => {
     const getFirebaseData = async () => {

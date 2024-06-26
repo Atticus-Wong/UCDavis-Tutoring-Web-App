@@ -1,3 +1,5 @@
+import { Dayjs } from "dayjs";
+
 /** Type guard to determine if an entry is an `Attendance` entry or `HelpSession` */
 export function isAttendance(entry: Attendance | HelpSession): entry is Attendance {
   return (
@@ -34,6 +36,10 @@ export function millisecondsToMinutesSeconds(milliseconds: number): {
   return { minutes, seconds };
 }
 
+export function minutesSecondsToMilliseconds(minutes: number, seconds: number): number {
+  return ((minutes * 60) + seconds) * 1000;
+}
+
 /** Function to get the most recent Sunday */
 export function getLastSunday() {
   const date = new Date();
@@ -44,4 +50,11 @@ export function getLastSunday() {
     date.getMonth(),
     date.getDate() - daysSinceLastSunday
   );
+}
+
+export function dayAndTimeToUnixMs(input: Dayjs | null | undefined): number {
+  if (!input) {
+    return 0;
+  }
+  return input.unix() * 1000;
 }

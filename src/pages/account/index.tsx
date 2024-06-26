@@ -3,10 +3,11 @@ import ServerSelect from '@/src/components/ServerSelect';
 import UserView from '@/src/components/UserView';
 import { useSelectedServer } from '@/src/utils/atom';
 import { API_VERSION } from '@/src/utils/constants';
-import { Box, Typography } from '@mui/material';
+import { Box, Button, Typography } from '@mui/material';
 import axios from 'axios';
 import { APIGuild, APIGuildMember } from 'discord-api-types/v10';
 import { useSession } from 'next-auth/react';
+import { redirect } from 'next/dist/server/api-utils';
 import { useEffect, useState } from 'react';
 
 export default function AccountPage() {
@@ -20,7 +21,6 @@ export default function AccountPage() {
         setDiscordInfo(undefined);
         return;
       }
-
       try {
         const response = await axios<APIGuildMember>(
           `https://discord.com/api/v${API_VERSION}/users/@me/guilds/${selectedServer?.id}/member`,
@@ -36,10 +36,14 @@ export default function AccountPage() {
         setDiscordInfo(response.data);
       } catch (error) {
         setDiscordInfo(undefined);
-        console.error('An error occurred:', error);
+        if (axios.isAxiosError(error)) {
+          console.error('Response data:', error.response?.data);
+        }
+        else {
+          console.log('An error occurred:', error);
+        }
       }
     };
-
     getDiscordInfo();
   }, [session, selectedServer]);
 

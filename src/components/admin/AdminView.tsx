@@ -1,4 +1,5 @@
-import { Typography } from '@mui/material';
+'use client';
+import { Typography, Box } from '@mui/material';
 import AttendanceTable from '../tables/AttendanceTable';
 import { useEffect, useState } from 'react';
 import { getDocs } from 'firebase/firestore';
@@ -13,23 +14,30 @@ export default function AdminView() {
 
   useEffect(() => {
     const getFirebaseData = async () => {
-      await getDocs(attendanceCol).then(snapshot => {
-        snapshot.docs.forEach(doc => {
-          if (doc.id === selectedServer?.id) {
-            setAttendanceEntries(doc.data().entries);
+      const attendanceSnapshot = await getDocs(attendanceCol);
+      attendanceSnapshot.docs.forEach(doc => {
+
+        if (doc.id === selectedServer?.id) {
+          const data = doc.data();
+          if (data && data.entries) {
+            setAttendanceEntries(data.entries);
           }
-        });
+        }
       });
-      await getDocs(helpSessionsCol).then(snapshot => {
-        snapshot.docs.forEach(doc => {
-          if (doc.id === selectedServer?.id) {
-            setHelpSessionEntries(doc.data().entries);
+      const helpSessionsSnapshot = await getDocs(helpSessionsCol);
+      helpSessionsSnapshot.docs.forEach(doc => {
+        if (doc.id === selectedServer?.id) {
+          const data = doc.data();
+          if (data && data.entries) {
+            setHelpSessionEntries(data.entries);
           }
-        });
+        }
       });
     };
 
     getFirebaseData();
+
+
   }, [selectedServer]);
 
   return (
@@ -39,6 +47,8 @@ export default function AdminView() {
       </Typography>
       <AttendanceTable entries={attendanceEntries} />
       <HelpSessionsTable entries={helpSessionEntries} />
+      <Box textAlign="center">
+      </Box>
     </>
   );
 }

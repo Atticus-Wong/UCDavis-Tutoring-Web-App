@@ -38,7 +38,7 @@ type ServerBackup = {
       displayName: string;
       memberId: string;
       waitStart: Date;
-    };
+    }[];
   }[];
   seriousServer: false;
   serverName: string;
@@ -56,4 +56,14 @@ type ServerBackup = {
 type Server = {
   id: string;
   server: ServerBackup;
+};
+
+type AttendanceFormModalProps = {
+  entries: Attendance[]
+  entry: Attendance
+};
+
+type HelpSessionFormModalProps = {
+  entries: HelpSession[]
+  entry: HelpSession
 };

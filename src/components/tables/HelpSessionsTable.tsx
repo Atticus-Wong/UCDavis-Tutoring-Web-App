@@ -2,79 +2,110 @@ import {
   createColumnHelper,
   flexRender,
   getCoreRowModel,
-  useReactTable
+  useReactTable,
+  ColumnDef
 } from '@tanstack/react-table';
+import { useMemo } from 'react';
 import { millisecondsToMinutesSeconds } from '../../utils/utils';
 import { Typography } from '@mui/material';
 import SessionStats from './SessionStats';
+import HelpSessionModal from './table-outline/HelpSessionsModal';
 
 const columnHelper = createColumnHelper<HelpSession>();
-
-const columns = [
-  columnHelper.accessor(
-    row => {
-      const { minutes, seconds } = millisecondsToMinutesSeconds(
-        row.sessionEndUnixMs - row.sessionStartUnixMs
-      );
-
-      return `${minutes} min. ${seconds} sec.`;
-    },
-    {
-      id: 'sessionTime',
-      header: 'Session Time'
-    }
-  ),
-  columnHelper.accessor('sessionStartUnixMs', {
-    header: 'Session Start',
-    cell: info => {
-      const date = new Date(info.getValue());
-
-      return `${date.toDateString()} - ${date.toLocaleTimeString()}`;
-    }
-  }),
-  columnHelper.accessor('sessionEndUnixMs', {
-    header: 'Session End',
-    cell: info => {
-      const date = new Date(info.getValue());
-
-      return `${date.toDateString()} - ${date.toLocaleTimeString()}`;
-    }
-  }),
-  columnHelper.accessor('waitTimeMs', {
-    header: 'Wait Time',
-    cell: info => {
-      const { minutes, seconds } = millisecondsToMinutesSeconds(info.getValue());
-
-      return `${minutes} min. ${seconds} sec.`;
-    }
-  }),
-  columnHelper.accessor('waitStart', {
-    header: 'Wait Start',
-    cell: info => {
-      const date = new Date(info.getValue());
-
-      return `${date.toDateString()} - ${date.toLocaleTimeString()}`;
-    }
-  }),
-  columnHelper.accessor('queueName', {
-    header: 'Queue',
-    cell: info => <p>{info.getValue()}</p>
-  }),
-  columnHelper.accessor('student', {
-    header: 'Student',
-    cell: info => <p>{info.getValue().displayName}</p>
-  }),
-  columnHelper.accessor('helper', {
-    header: 'Helper',
-    cell: info => <p>{info.getValue().displayName}</p>
-  })
-];
 
 type HelpSessionsTableProps = {
   entries: HelpSession[];
 };
 
 export default function HelpSessionsTable({ entries }: HelpSessionsTableProps) {
+  const columns: ColumnDef<HelpSession>[] = useMemo(() => [
+    {
+      id: 'sessionTime',
+      header: 'Session Time',
+      accessorFn: row => {
+        const { minutes, seconds } = millisecondsToMinutesSeconds(
+          row.sessionEndUnixMs - row.sessionStartUnixMs
+        );
+
+        return `${minutes} min. ${seconds} sec.`;
+      },
+    },
+    {
+      id: 'sessionStartUnixMs',
+      header: 'Session Start',
+      accessorKey: 'sessionStartUnixMs',
+      cell: ({ getValue }) => {
+        const date = new Date(getValue<number>());
+        return `${date.toDateString()} - ${date.toLocaleTimeString()}`;
+      }
+    },
+    {
+      id: 'sessionEndUnixMs',
+      header: 'Session End',
+      accessorKey: 'sessionEndUnixMs',
+      cell: ({ getValue }) => {
+        const date = new Date(getValue<number>());
+        return `${date.toDateString()} - ${date.toLocaleTimeString()}`;
+      }
+    },
+    {
+      id: 'waitTimeMs',
+      header: 'Wait Time',
+      accessorKey: 'waitTimeMs',
+      cell: ({ getValue }) => {
+        const { minutes, seconds } = millisecondsToMinutesSeconds(getValue<number>());
+        return `${minutes} min. ${seconds} sec.`;
+      }
+    },
+    {
+      id: 'waitStart',
+      header: 'Wait Start',
+      accessorKey: 'waitStart',
+      cell: ({ getValue }) => {
+        const date = new Date(getValue<number>());
+        return `${date.toDateString()} - ${date.toLocaleTimeString()}`;
+      }
+    },
+    {
+      id: 'queueName',
+      header: 'Queue',
+      accessorKey: 'queueName',
+      cell: ({ getValue }) => getValue<string>()
+    },
+    {
+      id: 'helper',
+      header: 'Helper',
+      accessorKey: 'helper',
+      cell: ({ getValue }) => <p>{getValue<{ id: string; displayName: string }>().displayName}</p>
+    },
+    {
+      id: 'student',
+      header: 'Student',
+      accessorKey: 'student',
+      cell: ({ getValue }) => <p>{getValue<{ id: string; displayName: string }>().displayName}</p>
+    },
+    {
+      id: 'actions',
+      header: 'Actions',
+      cell: ({ row }) => {
+        const currentEntry: HelpSession = {
+          helper: row.original.helper,
+          queueName: row.original.queueName,
+          sessionEndUnixMs: row.original.sessionEndUnixMs,
+          sessionStartUnixMs: row.original.sessionStartUnixMs,
+          student: row.original.student,
+          waitStart: row.original.waitStart,
+          waitTimeMs: row.original.waitTimeMs
+        };
+        return (
+          <HelpSessionModal
+            entries={entries}
+            entry={currentEntry}
+          />
+        );
+      }
+    }
+  ], [entries]);
   const table = useReactTable({
     columns,
     data: entries,

@@ -6,6 +6,8 @@ import { AppCacheProvider } from '@mui/material-nextjs/v13-pagesRouter';
 import { CssBaseline } from '@mui/material';
 import Layout from './layout';
 import { SessionProvider } from 'next-auth/react';
+import { LocalizationProvider } from '@mui/x-date-pickers';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 
 export default function App(props: AppProps) {
   const { Component, pageProps } = props;
@@ -14,9 +16,11 @@ export default function App(props: AppProps) {
       <AppCacheProvider {...props}>
         <ThemeProvider theme={theme}>
           <CssBaseline />
-          <Layout>
-            <Component {...pageProps} />
-          </Layout>
+          <LocalizationProvider dateAdapter={AdapterDayjs}>
+            <Layout>
+              <Component {...pageProps} />
+            </Layout>
+          </LocalizationProvider>
         </ThemeProvider>
       </AppCacheProvider>
     </SessionProvider>

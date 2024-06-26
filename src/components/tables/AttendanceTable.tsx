@@ -2,76 +2,99 @@ import {
   createColumnHelper,
   flexRender,
   getCoreRowModel,
-  useReactTable
+  useReactTable,
+  ColumnDef
 } from '@tanstack/react-table';
+import { useMemo } from 'react';
 import { millisecondsToMinutesSeconds } from '../../utils/utils';
 import { Typography } from '@mui/material';
 import SessionStats from './SessionStats';
-
-const columnHelper = createColumnHelper<Attendance>();
-
-const columns = [
-  columnHelper.accessor(
-    row => {
-      const { minutes, seconds } = millisecondsToMinutesSeconds(
-        row.helpEndUnixMs - row.helpStartUnixMs
-      );
-
-      return `${minutes} min. ${seconds} sec.`;
-    },
-    {
-      id: 'sessionTime',
-      header: 'Session Time'
-    }
-  ),
-  columnHelper.accessor('helpStartUnixMs', {
-    header: () => 'Help Start Date',
-    cell: info => {
-      const date = new Date(info.getValue());
-
-      return `${date.toDateString()} - ${date.toLocaleTimeString()}`;
-    }
-  }),
-  columnHelper.accessor('helpEndUnixMs', {
-    header: () => 'Help End Date',
-    cell: info => {
-      const date = new Date(info.getValue());
-
-      return `${date.toDateString()} - ${date.toLocaleTimeString()}`;
-    }
-  }),
-  columnHelper.accessor('activeTimeMs', {
-    header: () => 'Active Time',
-    cell: info => {
-      const { minutes, seconds } = millisecondsToMinutesSeconds(info.getValue());
-
-      return `${minutes} min. ${seconds} sec.`;
-    }
-  }),
-  columnHelper.accessor('helpedMembers', {
-    header: () => 'Helped Members',
-    cell: info => {
-      return info
-        .getValue()
-        .map(member => member.displayName)
-        .join(', ');
-    }
-  }),
-  columnHelper.accessor('helper', {
-    header: 'Helper',
-    cell: info => <p>{info.getValue().displayName}</p>
-  })
-];
+import AttendanceModal from './table-outline/AttendanceModal';
 
 type AttendanceTableProps = {
   entries: Attendance[];
-};
+}
 
 export default function AttendanceTable({ entries }: AttendanceTableProps) {
+  const columns: ColumnDef<Attendance>[] = useMemo(() => [
+    {
+      id: 'sessionTime',
+      header: 'Session Time',
+      accessorFn: row => {
+        const { minutes, seconds } = millisecondsToMinutesSeconds(
+          row.helpEndUnixMs - row.helpStartUnixMs
+        );
+
+        return `${minutes} min. ${seconds} sec.`;
+      },
+    },
+    {
+      id: 'helpStartUnixMs',
+      header: 'Help Start Date',
+      accessorKey: 'helpStartUnixMs',
+      cell: ({ getValue }) => {
+        const date = new Date(getValue<number>());
+        return `${date.toDateString()} - ${date.toLocaleTimeString()}`;
+      }
+    },
+    {
+      id: 'helpEndUnixMs',
+      header: 'Help End Date',
+      accessorKey: 'helpEndUnixMs',
+      cell: ({ getValue }) => {
+        const date = new Date(getValue<number>());
+        return `${date.toDateString()} - ${date.toLocaleTimeString()}`;
+      }
+    },
+    {
+      id: 'activeTimeMs',
+      header: 'Active Time',
+      accessorKey: 'activeTimeMs',
+      cell: ({ getValue }) => {
+        const { minutes, seconds } = millisecondsToMinutesSeconds(getValue<number>());
+        return `${minutes} min. ${seconds} sec.`;
+      }
+    },
+    {
+      id: 'helpedMembers',
+      header: 'Helped Members',
+      accessorKey: 'helpedMembers',
+      cell: ({ getValue }) => {
+        return getValue<{ displayName: string; id: string }[]>()
+          .map(member => member.displayName)
+          .join(', ');
+      }
+    },
+    {
+      id: 'helper',
+      header: 'Helper',
+      accessorKey: 'helper',
+      cell: ({ getValue }) => <p>{getValue<{ displayName: string; id: string }>().displayName}</p>
+    },
+    {
+      id: 'actions',
+      header: 'Actions',
+      cell: ({ row }) => {
+        const currentEntry: Attendance = {
+          activeTimeMs: row.original.activeTimeMs,
+          helpEndUnixMs: row.original.helpEndUnixMs,
+          helpStartUnixMs: row.original.helpStartUnixMs,
+          helpedMembers: row.original.helpedMembers,
+          helper: row.original.helper,
+        };
+        return (
+          <AttendanceModal
+            entries={entries}
+            entry={currentEntry}
+          />
+        );
+      }
+    }
+  ], [entries]);
   const table = useReactTable({
     columns,
     data: entries,
-    getCoreRowModel: getCoreRowModel()
+    getCoreRowModel: getCoreRowModel(),
   });
 
   if (!entries.length) {

@@ -36,10 +36,10 @@ declare module 'next-auth/jwt' {
 export const authOptions: NextAuthOptions = {
   providers: [
     DiscordProvider({
-      clientId: process.env.DISCORD_CLIENT_ID ?? '',
-      clientSecret: process.env.DISCORD_CLIENT_SECRET ?? '',
+      clientId: process.env.DISCORD_CLIENT_ID as string,
+      clientSecret: process.env.DISCORD_CLIENT_SECRET as string,
       authorization:
-        'https://discord.com/api/oauth2/authorize?scope=identify+guilds+email+guilds.members.read'
+        `https://discord.com/api/oauth2/authorize?scope=identify+email+guilds+guilds.members.read`
     })
   ],
   callbacks: {
@@ -57,7 +57,7 @@ export const authOptions: NextAuthOptions = {
       session.user.id = token.sub;
 
       return session;
-    }
+    },
   }
 };
 

@@ -2,8 +2,8 @@ import { attendanceCol, helpSessionsCol } from '@/src/utils/firebase';
 import { Typography } from '@mui/material';
 import { getDocs } from 'firebase/firestore';
 import { useEffect, useState } from 'react';
-import AttendanceTable from '../tables/AttendanceTable';
-import HelpSessionsTable from '../tables/HelpSessionsTable';
+import TutorAttendanceTable from '../tables/Tutor_AttendanceTable';
+import TutorHelpSessionsTable from '../tables/Tutor_HelpSessionsTable';
 import { useSelectedServer } from '@/src/utils/atom';
 
 type TutorViewProps = {
@@ -17,24 +17,20 @@ export default function TutorView({ userId }: TutorViewProps) {
 
   useEffect(() => {
     const getFirebaseData = async () => {
-      await getDocs(attendanceCol).then(snapshot => {
-        snapshot.docs.forEach(doc => {
-          if (doc.id === selectedServer?.id) {
-            setAttendanceEntries(
-              doc.data().entries.filter(entry => entry.helper.id === userId)
-            );
-          }
-        });
-      });
-      await getDocs(helpSessionsCol).then(snapshot => {
-        snapshot.docs.forEach(doc => {
-          if (doc.id === selectedServer?.id) {
-            setHelpSessionEntries(
-              doc.data().entries.filter(entry => entry.helper.id === userId)
-            );
-          }
-        });
-      });
+      const attendanceSnapshot = await getDocs(attendanceCol);
+      attendanceSnapshot.docs.forEach(doc => {
+        if (doc.id == selectedServer?.id) {
+          setAttendanceEntries(doc.data().entries.filter(entry => entry.helper.id === userId)
+          );
+        }
+      })
+      const helpSessionsSnapshot = await getDocs(helpSessionsCol);
+      helpSessionsSnapshot.docs.forEach(doc => {
+        if (doc.id === selectedServer?.id) {
+          setHelpSessionEntries(doc.data().entries.filter(entry => entry.helper.id === userId)
+          );
+        }
+      })
     };
 
     getFirebaseData();
@@ -45,8 +41,8 @@ export default function TutorView({ userId }: TutorViewProps) {
       <Typography fontWeight="bold" fontSize="2rem" textAlign="center">
         Tutor View
       </Typography>
-      <AttendanceTable entries={attendanceEntries} />
-      <HelpSessionsTable entries={helpSessionEntries} />
+      <TutorAttendanceTable entries={attendanceEntries} />
+      <TutorHelpSessionsTable entries={helpSessionEntries} />
     </>
   );
 }
