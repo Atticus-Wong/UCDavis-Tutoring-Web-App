@@ -58,12 +58,4 @@ type Server = {
   server: ServerBackup;
 };
 
-type AttendanceFormModalProps = {
-  entries: Attendance[]
-  entry: Attendance
-};
 
-type HelpSessionFormModalProps = {
-  entries: HelpSession[]
-  entry: HelpSession
-};

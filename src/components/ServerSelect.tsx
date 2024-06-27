@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import Box from '@mui/material/Box';
 import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
@@ -28,7 +28,7 @@ export default function ServerSelect() {
     };
 
     getFirebaseData();
-  }, [setSelectedServer]);
+  }, [setServers, setSelectedServer]);
 
   const handleChange = (event: SelectChangeEvent) => {
     setSelectedServer(servers?.find(server => server.id === event.target.value));

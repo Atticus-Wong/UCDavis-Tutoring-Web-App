@@ -5,36 +5,45 @@ import ModeEditIcon from '@mui/icons-material/ModeEdit';
 import CloseIcon from '@mui/icons-material/Close';
 import dayjs, { Dayjs } from 'dayjs';
 import { helpSessionsCol } from '@/src/utils/firebase';
-import { useSelectedServer, useServersFromFirebase } from '@/src/utils/atom';
+import { useSelectedServer } from '@/src/utils/atom';
 import { doc, updateDoc } from 'firebase/firestore';
 import { dayAndTimeToUnixMs } from '@/src/utils/utils';
-import handler from '@/src/pages/api/protected';
+import Overlay from '../../Overlay';
+import { SetStateAction } from 'jotai';
+
 type FloatingFormProps = {
-  onClose: () => void
-  data: HelpSession[],
-  entry: HelpSession
-}
-function FloatingForm({ onClose, data, entry }: FloatingFormProps) {
+  onClose: () => void;
+  data: HelpSession[];
+  entry: HelpSession;
+  setData: React.Dispatch<SetStateAction<HelpSession[]>>;
+};
 
-  const entryIndex = data.findIndex(item => (
-    item.helper === entry.helper &&
-    item.student === entry.student &&
-    item.waitStart === entry.waitStart &&
-    item.sessionStartUnixMs === entry.sessionStartUnixMs &&
-    item.queueName === entry.queueName &&
-    item.sessionEndUnixMs === entry.sessionEndUnixMs &&
-    item.waitTimeMs === entry.waitTimeMs
-  ));
+function FloatingForm({ onClose, data, entry, setData }: FloatingFormProps) {
+  const entryIndex = data.findIndex(
+    (item) =>
+      item.helper.id === entry.helper.id &&
+      item.student.id === entry.student.id &&
+      item.waitStart === entry.waitStart &&
+      item.sessionStartUnixMs === entry.sessionStartUnixMs &&
+      item.queueName === entry.queueName &&
+      item.sessionEndUnixMs === entry.sessionEndUnixMs &&
+      item.waitTimeMs === entry.waitTimeMs
+  );
 
-  const [sessionStart, setSessionStart] = useState<Dayjs | null | undefined>(dayjs(new Date(entry.sessionStartUnixMs)));
-  const [sessionEnd, setSessionEnd] = useState<Dayjs | null | undefined>(dayjs(new Date(entry.sessionEndUnixMs)));
-  const [waitStart, setWaitStart] = useState<Dayjs | null | undefined>(dayjs(new Date(entry.waitStart)));
+  const [sessionStart, setSessionStart] = useState<Dayjs | null | undefined>(
+    dayjs(new Date(entry.sessionStartUnixMs))
+  );
+  const [sessionEnd, setSessionEnd] = useState<Dayjs | null | undefined>(
+    dayjs(new Date(entry.sessionEndUnixMs))
+  );
+  const [waitStart, setWaitStart] = useState<Dayjs | null | undefined>(
+    dayjs(new Date(entry.waitStart))
+  );
   const [queueName, setQueueName] = useState<string>(entry.queueName);
   const [student, setStudent] = useState<string>(entry.student.displayName);
   const [helper, setHelper] = useState<string>(entry.helper.displayName);
-  const [servers = []] = useServersFromFirebase();
 
-  const [selectedServer, setSelectedServer] = useSelectedServer();
+  const [selectedServer] = useSelectedServer();
   const updateFirebaseHelpSessions = async () => {
     const helpSessionsRef = doc(helpSessionsCol, `/${selectedServer?.id}`);
     const updatedEntry = {
@@ -46,29 +55,25 @@ function FloatingForm({ onClose, data, entry }: FloatingFormProps) {
       student: { id: '0', displayName: student },
       waitStart: dayAndTimeToUnixMs(waitStart),
       waitTimeMs: dayAndTimeToUnixMs(sessionEnd) - dayAndTimeToUnixMs(sessionStart)
-    }
+    };
 
     const updatedEntries = [...data];
     updatedEntries[entryIndex] = updatedEntry;
 
     try {
       await updateDoc(helpSessionsRef, { entries: updatedEntries });
+      setData(updatedEntries);
       alert('Successfully Updated');
     } catch (err) {
       console.error(err);
     }
+  };
 
-  }
   const handleFormSubmit = () => {
     updateFirebaseHelpSessions();
     onClose();
-    const temp = selectedServer;
-    setSelectedServer(servers[servers.length]);
-    setTimeout(() => {
-      setSelectedServer(temp);
+  };
 
-    }, 0);
-  }
   return (
     <Box
       sx={{
@@ -82,7 +87,7 @@ function FloatingForm({ onClose, data, entry }: FloatingFormProps) {
         zIndex: 1000,
         width: '90%',
         maxWidth: '1200px',
-        borderRadius: 1,
+        borderRadius: 1
       }}
     >
       <Paper sx={{ p: 3, position: 'relative' }}>
@@ -100,28 +105,22 @@ function FloatingForm({ onClose, data, entry }: FloatingFormProps) {
           <DesktopDateTimePicker
             label="Session Start"
             value={sessionStart}
-            onChange={() => setSessionStart(sessionStart)}
-            sx={{
-              width: '100%',
-            }}
+            onChange={(newValue) => setSessionStart(newValue)}
+            sx={{ width: '100%' }}
           />
-          <Box marginY='1rem'></Box>
+          <Box marginY="1rem"></Box>
           <DesktopDateTimePicker
             label="Session End"
             value={sessionEnd}
-            onChange={() => setSessionEnd(sessionEnd)}
-            sx={{
-              width: '100%',
-            }}
+            onChange={(newValue) => setSessionEnd(newValue)}
+            sx={{ width: '100%' }}
           />
-          <Box marginY='1rem'></Box>
+          <Box marginY="1rem"></Box>
           <DesktopDateTimePicker
             label="Wait Start"
             value={waitStart}
-            onChange={() => setWaitStart(waitStart)}
-            sx={{
-              width: '100%',
-            }}
+            onChange={(newValue) => setWaitStart(newValue)}
+            sx={{ width: '100%' }}
           />
           <TextField
             fullWidth
@@ -145,7 +144,7 @@ function FloatingForm({ onClose, data, entry }: FloatingFormProps) {
             margin="normal"
             variant="outlined"
             value={helper}
-            onChange={e => setHelper(e.target.value)}
+            onChange={(e) => setHelper(e.target.value)}
           />
           <Box display="flex" justifyContent="flex-end" mt={2}>
             <Button
@@ -156,7 +155,12 @@ function FloatingForm({ onClose, data, entry }: FloatingFormProps) {
             >
               Submit
             </Button>
-            <Button variant="outlined" color="secondary" onClick={onClose} sx={{ fontSize: '0.875rem' }}>
+            <Button
+              variant="outlined"
+              color="secondary"
+              onClick={onClose}
+              sx={{ fontSize: '0.875rem' }}
+            >
               Cancel
             </Button>
           </Box>
@@ -166,8 +170,13 @@ function FloatingForm({ onClose, data, entry }: FloatingFormProps) {
   );
 }
 
+type HelpSessionFormModalProps = {
+  entries: HelpSession[];
+  entry: HelpSession;
+  setData: React.Dispatch<SetStateAction<HelpSession[]>>;
+};
 
-function HelpSessionModal({ entries, entry }: HelpSessionFormModalProps) {
+function HelpSessionModal({ entries, entry, setData }: HelpSessionFormModalProps) {
   const [isFormOpen, setIsFormOpen] = useState(false);
 
   const handleEditClick = () => {
@@ -183,7 +192,12 @@ function HelpSessionModal({ entries, entry }: HelpSessionFormModalProps) {
       <Button color="primary" onClick={handleEditClick}>
         <ModeEditIcon />
       </Button>
-      {isFormOpen && <FloatingForm onClose={handleCloseForm} data={entries} entry={entry} />}
+      {isFormOpen && (
+        <>
+          <Overlay isVisible={isFormOpen} />
+          <FloatingForm onClose={handleCloseForm} data={entries} entry={entry} setData={setData} />
+        </>
+      )}
     </div>
   );
 }

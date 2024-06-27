@@ -39,11 +39,9 @@ export default function AccountPage() {
         if (axios.isAxiosError(error)) {
           console.error('Response data:', error.response?.data);
         }
-        else {
-          console.log('An error occurred:', error);
-        }
       }
     };
+
     getDiscordInfo();
   }, [session, selectedServer]);
 

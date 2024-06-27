@@ -1,23 +1,26 @@
 import {
-  createColumnHelper,
   flexRender,
   getCoreRowModel,
   useReactTable,
   ColumnDef
 } from '@tanstack/react-table';
-import { useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { millisecondsToMinutesSeconds } from '../../utils/utils';
 import { Typography } from '@mui/material';
 import SessionStats from './SessionStats';
 import HelpSessionModal from './table-outline/HelpSessionsModal';
-
-const columnHelper = createColumnHelper<HelpSession>();
 
 type HelpSessionsTableProps = {
   entries: HelpSession[];
 };
 
 export default function HelpSessionsTable({ entries }: HelpSessionsTableProps) {
+  const [dataEntries, setDataEntries] = useState<HelpSession[]>([]);
+
+  useEffect(() => {
+    setDataEntries(entries);
+  }, [entries]);
+
   const columns: ColumnDef<HelpSession>[] = useMemo(() => [
     {
       id: 'sessionTime',
@@ -26,7 +29,6 @@ export default function HelpSessionsTable({ entries }: HelpSessionsTableProps) {
         const { minutes, seconds } = millisecondsToMinutesSeconds(
           row.sessionEndUnixMs - row.sessionStartUnixMs
         );
-
         return `${minutes} min. ${seconds} sec.`;
       },
     },
@@ -88,31 +90,24 @@ export default function HelpSessionsTable({ entries }: HelpSessionsTableProps) {
       id: 'actions',
       header: 'Actions',
       cell: ({ row }) => {
-        const currentEntry: HelpSession = {
-          helper: row.original.helper,
-          queueName: row.original.queueName,
-          sessionEndUnixMs: row.original.sessionEndUnixMs,
-          sessionStartUnixMs: row.original.sessionStartUnixMs,
-          student: row.original.student,
-          waitStart: row.original.waitStart,
-          waitTimeMs: row.original.waitTimeMs
-        };
         return (
           <HelpSessionModal
-            entries={entries}
-            entry={currentEntry}
+            entries={dataEntries}
+            entry={row.original}
+            setData={setDataEntries}
           />
         );
       }
     }
-  ], [entries]);
+  ], [dataEntries]);
+
   const table = useReactTable({
     columns,
-    data: entries,
+    data: dataEntries,
     getCoreRowModel: getCoreRowModel()
   });
 
-  if (!entries.length) {
+  if (!dataEntries.length) {
     return (
       <Typography
         fontWeight="bold"
@@ -137,7 +132,7 @@ export default function HelpSessionsTable({ entries }: HelpSessionsTableProps) {
       >
         Help Sessions
       </Typography>
-      <SessionStats entries={entries} />
+      <SessionStats entries={dataEntries} />
       <div style={{ overflowY: 'scroll', height: '32rem', padding: 4 }}>
         <table
           style={{

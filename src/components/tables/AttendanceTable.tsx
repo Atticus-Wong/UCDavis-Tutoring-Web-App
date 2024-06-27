@@ -1,11 +1,10 @@
 import {
-  createColumnHelper,
   flexRender,
   getCoreRowModel,
   useReactTable,
   ColumnDef
 } from '@tanstack/react-table';
-import { useMemo } from 'react';
+import { useMemo, useState, useEffect } from 'react';
 import { millisecondsToMinutesSeconds } from '../../utils/utils';
 import { Typography } from '@mui/material';
 import SessionStats from './SessionStats';
@@ -16,6 +15,13 @@ type AttendanceTableProps = {
 }
 
 export default function AttendanceTable({ entries }: AttendanceTableProps) {
+  const [setDataEntries, setSetDataEntries] = useState<Attendance[]>([]);
+
+  // Ensure state is updated when entries prop changes
+  useEffect(() => {
+    setSetDataEntries(entries);
+  }, [entries]);
+
   const columns: ColumnDef<Attendance>[] = useMemo(() => [
     {
       id: 'sessionTime',
@@ -84,20 +90,23 @@ export default function AttendanceTable({ entries }: AttendanceTableProps) {
         };
         return (
           <AttendanceModal
-            entries={entries}
+            entries={setDataEntries}
             entry={currentEntry}
+            setData={setSetDataEntries}
           />
         );
       }
     }
-  ], [entries]);
+  ], [setDataEntries]);
+
   const table = useReactTable({
     columns,
-    data: entries,
+    data: setDataEntries,
     getCoreRowModel: getCoreRowModel(),
   });
 
-  if (!entries.length) {
+
+  if (!setDataEntries.length) {
     return (
       <Typography
         fontWeight="bold"
@@ -122,7 +131,7 @@ export default function AttendanceTable({ entries }: AttendanceTableProps) {
       >
         Attendance
       </Typography>
-      <SessionStats entries={entries} />
+      <SessionStats entries={setDataEntries} />
       <div style={{ overflowY: 'scroll', height: '32rem', padding: 4 }}>
         <table
           style={{

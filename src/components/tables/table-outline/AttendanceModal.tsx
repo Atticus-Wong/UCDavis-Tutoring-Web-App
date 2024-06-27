@@ -5,19 +5,31 @@ import CloseIcon from '@mui/icons-material/Close';
 import ModeEditIcon from '@mui/icons-material/ModeEdit';
 import { attendanceCol } from '@/src/utils/firebase';
 import { doc, updateDoc } from 'firebase/firestore';
-import { useSelectedServer, useServersFromFirebase } from '@/src/utils/atom';
+import { useSelectedServer } from '@/src/utils/atom';
 import dayjs, { Dayjs } from 'dayjs';
-import { dayAndTimeToUnixMs, millisecondsToMinutesSeconds, minutesSecondsToMilliseconds } from '@/src/utils/utils';
+import { dayAndTimeToUnixMs } from '@/src/utils/utils';
+import Overlay from '../../Overlay';
+import { SetStateAction } from 'jotai';
+
+type AttendanceFormModalProps = {
+  entries: Attendance[]
+  entry: Attendance
+  setData: React.Dispatch<SetStateAction<Attendance[]>>
+};
 
 type FloatingFormProps = {
   onClose: () => void,
   data: Attendance[],
-  entry: Attendance
-
+  entry: Attendance,
+  setData: React.Dispatch<React.SetStateAction<Attendance[]>>
 };
+/* 
+ * @param data: all attendance entries from the selectedServer
+ * @param entry: the attendance entry that the user wants to edit
+  */
+function FloatingForm({ onClose, data, entry, setData }: FloatingFormProps) {
 
-function FloatingForm({ onClose, data, entry }: FloatingFormProps) {
-
+  // entryIndex: determines which entry in firebase is displayed by selected row
   const entryIndex = data.findIndex(item => (
     item.activeTimeMs === entry.activeTimeMs &&
     item.helpStartUnixMs === entry.helpStartUnixMs &&
@@ -30,8 +42,7 @@ function FloatingForm({ onClose, data, entry }: FloatingFormProps) {
   const [helpEnd, setHelpEnd] = useState<Dayjs | null | undefined>(dayjs(new Date(entry.helpEndUnixMs)));
   const [helpedMembers, setHelpedMembers] = useState<string>(entry.helpedMembers.map(member => member.displayName).join(', '));
   const [helper, setHelper] = useState<string>(entry.helper.displayName);
-  const [selectedServer, setSelectedServer] = useSelectedServer();
-  const [servers = []] = useServersFromFirebase();
+  const [selectedServer] = useSelectedServer();
 
 
   const updateFirebaseAttendance = async () => {
@@ -50,6 +61,7 @@ function FloatingForm({ onClose, data, entry }: FloatingFormProps) {
 
     try {
       await updateDoc(attendanceRef, { entries: updatedEntries });
+      setData(updatedEntries);
       alert('Successfully updated');
     } catch (err) {
       console.error(err);
@@ -59,13 +71,6 @@ function FloatingForm({ onClose, data, entry }: FloatingFormProps) {
   const handleFormSubmit = () => {
     updateFirebaseAttendance();
     onClose();
-    const temp = selectedServer;
-    setSelectedServer(servers[servers.length + 1]);
-    setTimeout(() => {
-      setSelectedServer(temp);
-
-    }, 0);
-
   }
 
   return (
@@ -152,7 +157,7 @@ function FloatingForm({ onClose, data, entry }: FloatingFormProps) {
   );
 }
 
-function AttendanceModal({ entries, entry }: AttendanceFormModalProps) {
+function AttendanceModal({ entries, entry, setData }: AttendanceFormModalProps) {
   const [isFormOpen, setIsFormOpen] = useState(false);
 
   const handleEditClick = () => {
@@ -168,7 +173,12 @@ function AttendanceModal({ entries, entry }: AttendanceFormModalProps) {
       <Button color="primary" onClick={handleEditClick}>
         <ModeEditIcon />
       </Button>
-      {isFormOpen && <FloatingForm onClose={handleCloseForm} data={entries} entry={entry} />}
+      {isFormOpen && (
+        <>
+          <Overlay isVisible={isFormOpen} />
+          <FloatingForm onClose={handleCloseForm} data={entries} entry={entry} setData={setData} />
+        </>
+      )}
     </div>
   );
 }
