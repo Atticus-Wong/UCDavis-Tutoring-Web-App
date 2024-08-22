@@ -49,7 +49,7 @@ function FloatingForm({ onClose, data, entry, setData }: FloatingFormProps) {
     const attendanceRef = doc(attendanceCol, `/${selectedServer?.id}`);
     const updatedEntry = {
       ...data[entryIndex],
-      activeTimeMs: 0,
+      activeTimeMs: entry.activeTimeMs,
       helpStartUnixMs: dayAndTimeToUnixMs(helpStart),
       helpEndUnixMs: dayAndTimeToUnixMs(helpEnd),
       helpedMembers: helpedMembers.split(', ').map(name => ({ displayName: name, id: '0' })),

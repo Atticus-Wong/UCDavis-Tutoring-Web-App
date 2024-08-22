@@ -2,20 +2,37 @@ import {
   flexRender,
   getCoreRowModel,
   useReactTable,
-  ColumnDef
+  ColumnDef,
+  getFilteredRowModel,
+  FilterFn,
+  ColumnFiltersState,
 } from '@tanstack/react-table';
-import { useMemo, useState, useEffect } from 'react';
+import { useMemo, useEffect, useState } from 'react';
 import { millisecondsToMinutesSeconds } from '../../utils/utils';
-import { Typography } from '@mui/material';
+import { Typography, TextField } from '@mui/material';
 import SessionStats from './SessionStats';
 import AttendanceModal from './table-outline/AttendanceModal';
+import { BRAND_COLOR } from '@/src/utils/constants';
+import { useSetDataEntries } from '@/src/utils/atom';
+import { DateTimePicker } from '@mui/x-date-pickers';
+import { Dayjs } from 'dayjs';
+import Filters from './Filters';
 
 type AttendanceTableProps = {
   entries: Attendance[];
 }
 
+type HelperType = {
+  id: string,
+  displayName: string
+}
+
 export default function AttendanceTable({ entries }: AttendanceTableProps) {
-  const [setDataEntries, setSetDataEntries] = useState<Attendance[]>([]);
+  const [setDataEntries, setSetDataEntries] = useSetDataEntries();
+  const [filtering, setFiltering] = useState('');
+  const [startDate, setStartDate] = useState<Dayjs | null | undefined>(null);
+  const [endDate, setEndDate] = useState<Dayjs | null | undefined>(null);
+  const [columnFilters, setColumnFilter] = useState<ColumnFiltersState>([]);
 
   // Ensure state is updated when entries prop changes
   useEffect(() => {
@@ -26,56 +43,70 @@ export default function AttendanceTable({ entries }: AttendanceTableProps) {
     {
       id: 'sessionTime',
       header: 'Session Time',
-      accessorFn: row => {
+      accessorFn: (row) => {
         const { minutes, seconds } = millisecondsToMinutesSeconds(
           row.helpEndUnixMs - row.helpStartUnixMs
         );
-
         return `${minutes} min. ${seconds} sec.`;
       },
     },
     {
       id: 'helpStartUnixMs',
       header: 'Help Start Date',
-      accessorKey: 'helpStartUnixMs',
+      accessorFn: (row) => row.helpStartUnixMs,
       cell: ({ getValue }) => {
         const date = new Date(getValue<number>());
         return `${date.toDateString()} - ${date.toLocaleTimeString()}`;
+      },
+      filterFn: (row, columnId, filterValue) => {
+        if (!filterValue) return true;
+        const cellValue = row.getValue<number>(columnId);
+        return cellValue >= filterValue;
       }
     },
     {
       id: 'helpEndUnixMs',
       header: 'Help End Date',
-      accessorKey: 'helpEndUnixMs',
+      accessorFn: (row) => row.helpEndUnixMs,
       cell: ({ getValue }) => {
         const date = new Date(getValue<number>());
         return `${date.toDateString()} - ${date.toLocaleTimeString()}`;
+      },
+      filterFn: (row, columnId, filterValue) => {
+        if (!filterValue) return true;
+        const cellValue = row.getValue<number>(columnId);
+        return cellValue <= filterValue;
       }
     },
     {
       id: 'activeTimeMs',
       header: 'Active Time',
-      accessorKey: 'activeTimeMs',
+      accessorFn: (row) => row.activeTimeMs,
       cell: ({ getValue }) => {
         const { minutes, seconds } = millisecondsToMinutesSeconds(getValue<number>());
         return `${minutes} min. ${seconds} sec.`;
-      }
+      },
     },
     {
       id: 'helpedMembers',
       header: 'Helped Members',
-      accessorKey: 'helpedMembers',
+      accessorFn: (row) => row.helpedMembers,
       cell: ({ getValue }) => {
         return getValue<{ displayName: string; id: string }[]>()
           .map(member => member.displayName)
           .join(', ');
-      }
+      },
+      filterFn: 'arrIncludes'
     },
     {
       id: 'helper',
       header: 'Helper',
-      accessorKey: 'helper',
-      cell: ({ getValue }) => <p>{getValue<{ displayName: string; id: string }>().displayName}</p>
+      accessorFn: (row) => row.helper,
+      cell: ({ getValue }) => <p>{getValue<{ displayName: string; id: string }>().displayName}</p>,
+      filterFn: (row, columnId, filterValue: HelperType) => {
+        const cellValue = row.getValue<HelperType>(columnId);
+        return cellValue.displayName.toLowerCase().includes(filterValue.displayName.toLowerCase());
+      }
     },
     {
       id: 'actions',
@@ -103,8 +134,12 @@ export default function AttendanceTable({ entries }: AttendanceTableProps) {
     columns,
     data: setDataEntries,
     getCoreRowModel: getCoreRowModel(),
+    getFilteredRowModel: getFilteredRowModel(),
+    state: {
+      columnFilters: columnFilters
+    },
+    onColumnFiltersChange: setColumnFilter
   });
-
 
   if (!setDataEntries.length) {
     return (
@@ -132,21 +167,36 @@ export default function AttendanceTable({ entries }: AttendanceTableProps) {
         Attendance
       </Typography>
       <SessionStats entries={setDataEntries} />
-      <div style={{ overflowY: 'scroll', height: '32rem', padding: 4 }}>
+      <Filters
+        columnFilters={columnFilters}
+        setColumnFilters={setColumnFilter}
+      />
+      <div style={{ overflowY: 'scroll', height: '32rem', padding: 4, fontSize: '1.5rem' }}>
         <table
           style={{
             borderCollapse: 'collapse',
             marginLeft: 'auto',
             marginRight: 'auto',
             marginBottom: 8,
-            marginTop: 8
+            marginTop: 8,
+            borderRadius: '8px',
+            overflow: 'hidden',
+            width: '100%',
+            boxSizing: 'border-box'
           }}
         >
-          <thead style={{ position: 'sticky', top: 0 }}>
+          <thead style={{ position: 'sticky', top: 0, backgroundColor: BRAND_COLOR }}>
             {table.getHeaderGroups().map(headerGroup => (
               <tr key={headerGroup.id}>
                 {headerGroup.headers.map(header => (
-                  <th key={header.id} style={{ fontWeight: 600 }}>
+                  <th
+                    key={header.id}
+                    style={{
+                      fontWeight: 600,
+                      textAlign: 'center',
+                      padding: '16px'
+                    }}
+                  >
                     {header.isPlaceholder
                       ? null
                       : flexRender(header.column.columnDef.header, header.getContext())}
@@ -158,13 +208,20 @@ export default function AttendanceTable({ entries }: AttendanceTableProps) {
           <tbody>
             {table.getRowModel().rows.map(row => (
               <tr key={row.id}>
-                {row.getVisibleCells().map(cell => (
+                {row.getVisibleCells().map((cell, index) => (
                   <td
                     key={cell.id}
                     style={{
-                      border: '1px solid white',
-                      padding: 16,
-                      textAlign: 'center'
+                      paddingLeft: '16px',
+                      paddingRight: '16px',
+                      paddingTop: '8px',
+                      paddingBottom: '8px',
+                      textAlign: 'center',
+                      fontSize: '1.25rem',
+                      borderRight: index === row.getVisibleCells().length - 1 ? 'none' : '1px solid gray',
+                      wordWrap: 'break-word',
+                      whiteSpace: 'pre-wrap',
+                      maxWidth: '300px'
                     }}
                   >
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}

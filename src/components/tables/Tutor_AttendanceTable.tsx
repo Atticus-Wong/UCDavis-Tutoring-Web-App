@@ -7,6 +7,7 @@ import {
 import { millisecondsToMinutesSeconds } from '../../utils/utils';
 import { Typography } from '@mui/material';
 import SessionStats from './SessionStats';
+import { BRAND_COLOR } from '@/src/utils/constants';
 const columnHelper = createColumnHelper<Attendance>();
 
 const columns = [
@@ -144,7 +145,6 @@ export default function TutorAttendanceTable({ entries }: TutorAttendanceTablePr
           </tbody>
         </table>
       </div>
-
     </>
   );
 }

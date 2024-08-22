@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import Box from '@mui/material/Box';
 import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
@@ -6,12 +6,33 @@ import FormControl from '@mui/material/FormControl';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
 import { getDocs } from 'firebase/firestore';
 import { serverBackupsCol } from '../utils/firebase';
-import { useSelectedServer, useServersFromFirebase } from '../utils/atom';
+import { useSelectedServer } from '../utils/atom';
+// import { getUserServers } from '../pages/api/discord';
+// import { useSession } from 'next-auth/react';
+
 
 export default function ServerSelect() {
   const [selectedServer, setSelectedServer] = useSelectedServer();
-  const [servers, setServers] = useServersFromFirebase();
+  const [servers, setServers] = useState<Server[]>();
+  //  const [userServers, setUserServers] = useState<Server[]>([]);
+  // const { data: session } = useSession();
+  /*
+  useEffect(() => {
+    if (session) {
+      const fetchUserServers = async () => {
+        try {
+          const userServers = await getUserServers(session.accessToken as string);
+          console.log('User Servers:', userServers);
+        } catch (error) {
+          console.error('Error fetching user servers:', error);
+        }
+        setUserServers(userServers);
+      };
 
+      fetchUserServers();
+    }
+  }, []);
+  */
   useEffect(() => {
     const getFirebaseData = async () => {
       await getDocs(serverBackupsCol).then(snapshot => {
@@ -28,7 +49,7 @@ export default function ServerSelect() {
     };
 
     getFirebaseData();
-  }, [setServers, setSelectedServer]);
+  }, [setSelectedServer]);
 
   const handleChange = (event: SelectChangeEvent) => {
     setSelectedServer(servers?.find(server => server.id === event.target.value));

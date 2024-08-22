@@ -31,3 +31,19 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
   res.status(200).json(response.data);
 }
+/*
+export async function getUserServers(userToken: string): Promise<string[]> {
+   * const response = await fetch('https://discord.com/api/v10/users/@me/guilds', {
+    headers: {
+      Authorization: `Bearer ${userToken}`
+    }
+  });
+
+  if (!response.ok) {
+    throw new Error('Failed to fetch user servers');
+  }
+
+  const guilds = await response.json();
+  return guilds.map((guild: { id: string }) => guild.id);
+}
+*/

@@ -7,6 +7,7 @@ import {
 import { millisecondsToMinutesSeconds } from '../../utils/utils';
 import { Typography } from '@mui/material';
 import SessionStats from './SessionStats';
+import { BRAND_COLOR } from '@/src/utils/constants';
 const columnHelper = createColumnHelper<HelpSession>();
 
 const columns = [
@@ -106,21 +107,32 @@ export default function TutorHelpSessionsTable({ entries }: TutorHelpSessionsTab
         Help Sessions
       </Typography>
       <SessionStats entries={entries} />
-      <div style={{ overflowY: 'scroll', height: '32rem', padding: 4 }}>
+      <div style={{ overflowY: 'scroll', height: '32rem', padding: 4, fontSize: '1.5rem' }}>
         <table
           style={{
             borderCollapse: 'collapse',
             marginLeft: 'auto',
             marginRight: 'auto',
             marginBottom: 8,
-            marginTop: 8
+            marginTop: 8,
+            borderRadius: '8px',
+            overflow: 'hidden',
+            width: '100%',
+            boxSizing: 'border-box'
           }}
         >
-          <thead style={{ position: 'sticky', top: 0 }}>
+          <thead style={{ position: 'sticky', top: 0, backgroundColor: BRAND_COLOR }}>
             {table.getHeaderGroups().map(headerGroup => (
               <tr key={headerGroup.id}>
                 {headerGroup.headers.map(header => (
-                  <th key={header.id} style={{ fontWeight: 600 }}>
+                  <th
+                    key={header.id}
+                    style={{
+                      fontWeight: 600,
+                      textAlign: 'center',
+                      padding: '16px'
+                    }}
+                  >
                     {header.isPlaceholder
                       ? null
                       : flexRender(header.column.columnDef.header, header.getContext())}
@@ -132,13 +144,20 @@ export default function TutorHelpSessionsTable({ entries }: TutorHelpSessionsTab
           <tbody>
             {table.getRowModel().rows.map(row => (
               <tr key={row.id}>
-                {row.getVisibleCells().map(cell => (
+                {row.getVisibleCells().map((cell, index) => (
                   <td
                     key={cell.id}
                     style={{
-                      border: '1px solid white',
-                      padding: 16,
-                      textAlign: 'center'
+                      paddingLeft: '16px',
+                      paddingRight: '16px',
+                      paddingTop: '8px',
+                      paddingBottom: '8px',
+                      textAlign: 'center',
+                      fontSize: '1.25rem',
+                      borderRight: index === row.getVisibleCells().length - 1 ? 'none' : '1px solid gray',
+                      wordWrap: 'break-word',
+                      whiteSpace: 'pre-wrap',
+                      maxWidth: '300px'
                     }}
                   >
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}

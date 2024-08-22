@@ -4,9 +4,9 @@ import { DesktopDateTimePicker } from '@mui/x-date-pickers';
 import ModeEditIcon from '@mui/icons-material/ModeEdit';
 import CloseIcon from '@mui/icons-material/Close';
 import dayjs, { Dayjs } from 'dayjs';
-import { helpSessionsCol } from '@/src/utils/firebase';
-import { useSelectedServer } from '@/src/utils/atom';
-import { doc, updateDoc } from 'firebase/firestore';
+import { attendanceCol, helpSessionsCol } from '@/src/utils/firebase';
+import { useSelectedServer, useSetDataEntries } from '@/src/utils/atom';
+import { doc, getDoc, updateDoc } from 'firebase/firestore';
 import { dayAndTimeToUnixMs } from '@/src/utils/utils';
 import Overlay from '../../Overlay';
 import { SetStateAction } from 'jotai';
@@ -44,8 +44,12 @@ function FloatingForm({ onClose, data, entry, setData }: FloatingFormProps) {
   const [helper, setHelper] = useState<string>(entry.helper.displayName);
 
   const [selectedServer] = useSelectedServer();
+
+  const [setDataEntries, setSetDataEntries] = useSetDataEntries();
+
   const updateFirebaseHelpSessions = async () => {
     const helpSessionsRef = doc(helpSessionsCol, `/${selectedServer?.id}`);
+    const oldSessionActiveTimeMs = entry.sessionEndUnixMs - entry.sessionStartUnixMs;
     const updatedEntry = {
       ...data[entryIndex],
       helper: { id: '0', displayName: helper },
@@ -63,9 +67,48 @@ function FloatingForm({ onClose, data, entry, setData }: FloatingFormProps) {
     try {
       await updateDoc(helpSessionsRef, { entries: updatedEntries });
       setData(updatedEntries);
+      updateActiveTimeMs(oldSessionActiveTimeMs, updatedEntry);
       alert('Successfully Updated');
     } catch (err) {
       console.error(err);
+    }
+  };
+
+  const updateActiveTimeMs = async (oldSessionActiveTimeMs: number, updatedEntry: HelpSession) => {
+    const attendanceRef = doc(attendanceCol, `/${selectedServer?.id}`);
+    const attendanceSnap = await getDoc(attendanceRef);
+
+    if (attendanceSnap.exists()) {
+      const attendanceData = attendanceSnap.data();
+
+      const attendanceEntries = attendanceData.entries || [];
+      const attendanceEntryIndex = attendanceEntries.findIndex((attendanceEntry: Attendance) =>
+        attendanceEntry.helper.id === entry.helper.id &&
+        updatedEntry.sessionStartUnixMs >= attendanceEntry.helpStartUnixMs &&
+        updatedEntry.sessionEndUnixMs <= attendanceEntry.helpEndUnixMs
+      );
+
+      if (attendanceEntryIndex !== -1) {
+        const attendanceEntry = attendanceEntries[attendanceEntryIndex];
+        const currentActiveTimeMs = attendanceEntry.activeTimeMs || 0;
+        const newSessionActiveTimeMs = updatedEntry.sessionEndUnixMs - updatedEntry.sessionStartUnixMs;
+
+        const newActiveTimeMs = currentActiveTimeMs - oldSessionActiveTimeMs + newSessionActiveTimeMs;
+
+        attendanceEntries[attendanceEntryIndex] = {
+          ...attendanceEntry,
+          activeTimeMs: newActiveTimeMs,
+        };
+
+        try {
+          await updateDoc(attendanceRef, {
+            entries: attendanceEntries,
+          });
+          setSetDataEntries(attendanceEntries);
+        } catch (err) {
+          console.error(err);
+        }
+      }
     }
   };
 

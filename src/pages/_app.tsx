@@ -8,7 +8,6 @@ import Layout from './layout';
 import { SessionProvider } from 'next-auth/react';
 import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
-
 export default function App(props: AppProps) {
   const { Component, pageProps } = props;
   return (
