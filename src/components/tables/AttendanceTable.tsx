@@ -29,9 +29,6 @@ type HelperType = {
 
 export default function AttendanceTable({ entries }: AttendanceTableProps) {
   const [setDataEntries, setSetDataEntries] = useSetDataEntries();
-  const [filtering, setFiltering] = useState('');
-  const [startDate, setStartDate] = useState<Dayjs | null | undefined>(null);
-  const [endDate, setEndDate] = useState<Dayjs | null | undefined>(null);
   const [columnFilters, setColumnFilter] = useState<ColumnFiltersState>([]);
 
   // Ensure state is updated when entries prop changes
@@ -106,7 +103,8 @@ export default function AttendanceTable({ entries }: AttendanceTableProps) {
       filterFn: (row, columnId, filterValue: HelperType) => {
         const cellValue = row.getValue<HelperType>(columnId);
         return cellValue.displayName.toLowerCase().includes(filterValue.displayName.toLowerCase());
-      }
+      },
+
     },
     {
       id: 'actions',
@@ -168,6 +166,9 @@ export default function AttendanceTable({ entries }: AttendanceTableProps) {
       </Typography>
       <SessionStats entries={setDataEntries} />
       <Filters
+        filter1='helpStartUnixMs'
+        filter2='helpEndUnixMs'
+        filter3='helper'
         columnFilters={columnFilters}
         setColumnFilters={setColumnFilter}
       />

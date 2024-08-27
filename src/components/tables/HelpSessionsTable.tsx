@@ -2,7 +2,9 @@ import {
   flexRender,
   getCoreRowModel,
   useReactTable,
-  ColumnDef
+  ColumnDef,
+  ColumnFiltersState,
+  getFilteredRowModel
 } from '@tanstack/react-table';
 import { useState, useMemo, useEffect } from 'react';
 import { millisecondsToMinutesSeconds } from '../../utils/utils';
@@ -10,13 +12,20 @@ import { Typography } from '@mui/material';
 import SessionStats from './SessionStats';
 import HelpSessionModal from './table-outline/HelpSessionsModal';
 import { BRAND_COLOR } from '@/src/utils/constants';
+import Filters from './Filters';
 
 type HelpSessionsTableProps = {
   entries: HelpSession[];
 };
 
+type HelperType = {
+  id: string,
+  displayName: string
+}
+
 export default function HelpSessionsTable({ entries }: HelpSessionsTableProps) {
   const [dataEntries, setDataEntries] = useState<HelpSession[]>([]);
+  const [columnFilter, setColumnFilter] = useState<ColumnFiltersState>([]);
 
   useEffect(() => {
     setDataEntries(entries);
@@ -33,13 +42,18 @@ export default function HelpSessionsTable({ entries }: HelpSessionsTableProps) {
         return `${minutes} min. ${seconds} sec.`;
       },
     },
-    {
+    { 
       id: 'sessionStartUnixMs',
       header: 'Session Start',
       accessorKey: 'sessionStartUnixMs',
       cell: ({ getValue }) => {
         const date = new Date(getValue<number>());
         return `${date.toDateString()} - ${date.toLocaleTimeString()}`;
+      },
+      filterFn: (row, columnId, filterValue) => {
+        if(!filterValue) return true;
+        const cellValue = row.getValue<number>(columnId);
+        return cellValue >= filterValue
       }
     },
     {
@@ -49,6 +63,11 @@ export default function HelpSessionsTable({ entries }: HelpSessionsTableProps) {
       cell: ({ getValue }) => {
         const date = new Date(getValue<number>());
         return `${date.toDateString()} - ${date.toLocaleTimeString()}`;
+      },
+      filterFn: (row, columnId, filterValue) => {
+        if(!filterValue) return true;
+        const cellValue = row.getValue<number>(columnId);
+        return cellValue <= filterValue
       }
     },
     {
@@ -74,13 +93,18 @@ export default function HelpSessionsTable({ entries }: HelpSessionsTableProps) {
       id: 'queueName',
       header: 'Queue',
       accessorKey: 'queueName',
-      cell: ({ getValue }) => getValue<string>()
+      cell: ({ getValue }) => getValue<string>(),
+      filterFn: 'includesString'
     },
     {
       id: 'helper',
       header: 'Helper',
       accessorKey: 'helper',
-      cell: ({ getValue }) => <p>{getValue<{ id: string; displayName: string }>().displayName}</p>
+      cell: ({ getValue }) => <p>{getValue<{ id: string; displayName: string }>().displayName}</p>,
+      filterFn: (row, columnid, filterValue: HelperType) => {
+        const cellValue = row.getValue<HelperType>(columnid);
+        return cellValue.displayName.toLowerCase().includes(filterValue.displayName.toLowerCase());
+      }
     },
     {
       id: 'student',
@@ -106,7 +130,12 @@ export default function HelpSessionsTable({ entries }: HelpSessionsTableProps) {
   const table = useReactTable({
     columns,
     data: dataEntries,
-    getCoreRowModel: getCoreRowModel()
+    getCoreRowModel: getCoreRowModel(),
+    getFilteredRowModel: getFilteredRowModel(),
+    state: {
+      columnFilters: columnFilter
+    },
+    onColumnFiltersChange: setColumnFilter
   });
 
   if (!dataEntries.length) {
@@ -135,6 +164,14 @@ export default function HelpSessionsTable({ entries }: HelpSessionsTableProps) {
         Help Sessions
       </Typography>
       <SessionStats entries={dataEntries} />
+      <Filters 
+        filter1='sessionStartUnixMs'
+        filter2='sessionEndUnixMs'
+        filter3='helper'
+        filter4='queueName'
+        columnFilters={columnFilter}
+        setColumnFilters={setColumnFilter}
+      />
       <div style={{ overflowY: 'scroll', height: '32rem', padding: 4, fontSize: '1.5rem' }}>
         <table
           style={{
