@@ -53,7 +53,7 @@ function FloatingForm({ onClose, data, entry, setData }: FloatingFormProps) {
       helpStartUnixMs: dayAndTimeToUnixMs(helpStart),
       helpEndUnixMs: dayAndTimeToUnixMs(helpEnd),
       helpedMembers: helpedMembers.split(', ').map(name => ({ displayName: name, id: '0' })),
-      helper: { displayName: helper, id: '0' }
+      helper: { displayName: helper, id: entry.helper.id }
     };
 
     const updatedEntries = [...data];

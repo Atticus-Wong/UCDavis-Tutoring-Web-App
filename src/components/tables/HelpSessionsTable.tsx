@@ -13,6 +13,7 @@ import SessionStats from './SessionStats';
 import HelpSessionModal from './table-outline/HelpSessionsModal';
 import { BRAND_COLOR } from '@/src/utils/constants';
 import Filters from './Filters';
+import { useSetHelpSessionEntries } from '@/src/utils/atom';
 
 type HelpSessionsTableProps = {
   entries: HelpSession[];
@@ -24,7 +25,7 @@ type HelperType = {
 }
 
 export default function HelpSessionsTable({ entries }: HelpSessionsTableProps) {
-  const [dataEntries, setDataEntries] = useState<HelpSession[]>([]);
+  const [dataEntries, setDataEntries] = useSetHelpSessionEntries();
   const [columnFilter, setColumnFilter] = useState<ColumnFiltersState>([]);
 
   useEffect(() => {
@@ -53,7 +54,7 @@ export default function HelpSessionsTable({ entries }: HelpSessionsTableProps) {
       filterFn: (row, columnId, filterValue) => {
         if(!filterValue) return true;
         const cellValue = row.getValue<number>(columnId);
-        return cellValue >= filterValue
+        return cellValue >= filterValue;
       }
     },
     {

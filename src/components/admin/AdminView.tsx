@@ -5,12 +5,18 @@ import { useEffect, useState } from 'react';
 import { getDocs } from 'firebase/firestore';
 import { attendanceCol, helpSessionsCol } from '@/src/utils/firebase';
 import HelpSessionsTable from '../tables/HelpSessionsTable';
-import { useSelectedServer } from '@/src/utils/atom';
+import { useSelectedServer, useSetHelpSessionEntries } from '@/src/utils/atom';
+import AdminSelect from '../AdminSelect';
+import Dashboard from './Dashboard';
+import { useSetDataEntries } from '@/src/utils/atom';
+
+
 
 export default function AdminView() {
   const [selectedServer] = useSelectedServer();
-  const [attendanceEntries, setAttendanceEntries] = useState<Attendance[]>([]);
-  const [helpSessionEntries, setHelpSessionEntries] = useState<HelpSession[]>([]);
+  const [attendanceEntries, setAttendanceEntries] = useSetDataEntries();
+  const [helpSessionEntries, setHelpSessionEntries] = useSetHelpSessionEntries();
+  const [selectedView, setSelectedView] = useState('tables');
 
   useEffect(() => {
     const getFirebaseData = async () => {
@@ -40,15 +46,34 @@ export default function AdminView() {
 
   }, [selectedServer]);
 
+  useEffect(() => {
+    setAttendanceEntries(attendanceEntries);
+    setHelpSessionEntries(helpSessionEntries);
+  }, [attendanceEntries, helpSessionEntries])
+
   return (
     <>
+      <AdminSelect 
+        selectedView={selectedView}
+        setSelectedView={setSelectedView}
+      />
       <Typography fontWeight="bold" fontSize="2rem" textAlign="center">
         Admin View
       </Typography>
-      <AttendanceTable entries={attendanceEntries} />
-      <HelpSessionsTable entries={helpSessionEntries} />
-      <Box textAlign="center">
-      </Box>
+      {selectedView === 'tables' ? (
+        <>
+          <AttendanceTable entries={attendanceEntries}/>
+          <HelpSessionsTable entries={helpSessionEntries} />
+        </>
+      ) : (
+        <Box>
+          <Dashboard 
+            attendance={attendanceEntries}
+            helpSession={helpSessionEntries}
+          />
+        </Box>
+      )}
+      <Box textAlign="center"></Box>
     </>
   );
 }

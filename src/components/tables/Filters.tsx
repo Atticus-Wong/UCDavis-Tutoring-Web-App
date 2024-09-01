@@ -13,15 +13,15 @@ type HelperType = {
 type ColumnFilter = { id: string; value: any };
 
 type FiltersProps = {
-  filter1: string,
-  filter2: string,
-  filter3: string,
+  filter1?: string,
+  filter2?: string,
+  filter3?: string,
   filter4?: string,
   columnFilters: ColumnFilter[];
   setColumnFilters: React.Dispatch<React.SetStateAction<ColumnFilter[]>>;
 };
 
-const Filters: React.FC<FiltersProps> = ({ filter1, filter2, filter3, filter4, columnFilters, setColumnFilters }) => {
+export const Filters: React.FC<FiltersProps> = ({ filter1, filter2, filter3, filter4, columnFilters, setColumnFilters }) => {
   const helperFilter = columnFilters.find((f) => f.id === filter3)?.value as HelperType | undefined;
   const helperName = helperFilter?.displayName || '';
   const helpStartDate = columnFilters.find((f) => f.id === filter1)?.value;
@@ -52,31 +52,38 @@ const Filters: React.FC<FiltersProps> = ({ filter1, filter2, filter3, filter4, c
 
   return (
     <Box display="flex" gap={2}>
-      <DatePicker 
-        label="Help Start Date"
-        value={helpStartDate ? dayjs(helpStartDate) : null}
-        onChange={(newValue) => updateDateFilter(filter1, newValue)}
+      { filter1 && 
+          <DatePicker 
+          label="Help Start Date"
+          value={helpStartDate ? dayjs(helpStartDate) : null}
+          onChange={(newValue) => updateDateFilter(filter1, newValue)}
       />
-      <DatePicker 
-        label="Help End Date"
-        value={helpEndDate ? dayjs(helpEndDate) : null}
-        onChange={(newValue) => updateDateFilter(filter2, newValue)}
-      />
-      <TextField 
-        placeholder="Search Helper"
-        value={helperName}
-        onChange={(e) => {
-          setColumnFilters(prev => {
-            const helperFilter = prev.find(f => f.id === filter3);
-            const newValue = { id: helperFilter?.value?.id || '', displayName: e.target.value };
-            if (helperFilter) {
-              return prev.map(f => f.id === filter3 ? { ...f, value: newValue } : f);
-            } else {
-              return [...prev, { id: filter3, value: newValue }];
-            }
-          });
-        }}
-      />
+
+      }
+      { filter2 &&
+        <DatePicker 
+          label="Help End Date"
+          value={helpEndDate ? dayjs(helpEndDate) : null}
+          onChange={(newValue) => updateDateFilter(filter2, newValue)}
+        />
+      }
+      { filter3 &&
+        <TextField 
+          placeholder="Search Helper"
+          value={helperName}
+          onChange={(e) => {
+            setColumnFilters(prev => {
+              const helperFilter = prev.find(f => f.id === filter3);
+              const newValue = { id: helperFilter?.value?.id || '', displayName: e.target.value };
+              if (helperFilter) {
+                return prev.map(f => f.id === filter3 ? { ...f, value: newValue } : f);
+              } else {
+                return [...prev, { id: filter3, value: newValue }];
+              }
+            });
+          }}
+        />
+      }
       {filter4 &&
         <TextField 
           placeholder="Search Queue" 
@@ -88,4 +95,5 @@ const Filters: React.FC<FiltersProps> = ({ filter1, filter2, filter3, filter4, c
   );
 };
 
+  
 export default Filters;

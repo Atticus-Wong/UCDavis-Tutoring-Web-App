@@ -8,3 +8,7 @@ const setDataEntries = atom<Attendance[]>([]);
 
 export const useSetDataEntries = () => useAtom(setDataEntries);
 
+const setHelpSessionEntries = atom<HelpSession[]>([]);
+
+export const useSetHelpSessionEntries = () => useAtom(setHelpSessionEntries);
+

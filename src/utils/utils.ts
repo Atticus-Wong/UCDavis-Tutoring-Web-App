@@ -36,6 +36,19 @@ export function millisecondsToMinutesSeconds(milliseconds: number): {
   return { minutes, seconds };
 }
 
+export function millisecondsToHourMinutes(milliseconds: number): {
+  hours: number;
+  minutes: number;
+} {
+  const totalSeconds: number = milliseconds / 1000;
+  const totalMinutes: number = Math.floor(totalSeconds / 60);
+  const hours: number = Math.floor(totalMinutes / 60);
+  const minutes: number = totalMinutes % 60;
+
+  return { hours, minutes };
+}
+
+
 export function minutesSecondsToMilliseconds(minutes: number, seconds: number): number {
   return ((minutes * 60) + seconds) * 1000;
 }
@@ -52,9 +65,31 @@ export function getLastSunday() {
   );
 }
 
+export function getLastSundayMilliseconds(): number {
+  const date = new Date();
+  const dayOfWeek = date.getDay(); 
+  const diffToLastSunday = dayOfWeek === 0 ? 7 : dayOfWeek;
+  date.setDate(date.getDate() - diffToLastSunday);
+  date.setHours(0, 0, 0, 0);
+  return date.getTime();
+}
+
+export function getTodaysDateInMilliseconds() {
+  const today = new Date();
+  today.setHours(0, 0, 0, 0); 
+  return today.getTime(); 
+}
+
+
 export function dayAndTimeToUnixMs(input: Dayjs | null | undefined): number {
   if (!input) {
     return 0;
   }
   return input.unix() * 1000;
+}
+
+export function getTodaysDayOfWeek(): number {
+  const today = new Date();
+  const dayIndex: number = today.getDay();
+  return dayIndex;
 }

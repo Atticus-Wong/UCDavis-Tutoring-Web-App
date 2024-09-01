@@ -57,5 +57,3 @@ type Server = {
   id: string;
   server: ServerBackup;
 };
-
-
