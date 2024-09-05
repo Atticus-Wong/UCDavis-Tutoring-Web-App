@@ -1,4 +1,4 @@
-import { Box, Typography } from '@mui/material';
+import { Box, Typography, Button } from '@mui/material';
 import { BRAND_COLOR } from '../utils/constants';
 import { useSession } from 'next-auth/react';
 import Link from 'next/link';
@@ -9,66 +9,45 @@ export default function Footer() {
 
   return (
     <Box
-      display="flex"
-      justifyContent="space-around"
-      marginTop="10%"
-      padding="4rem 0"
-      style={{ backgroundColor: BRAND_COLOR }}
+      sx={{ 
+        display: 'flex',
+        backgroundColor: '#242424',
+        justifyContent: 'center',
+        paddingX: '10vh',
+        paddingBottom: '10vh',
+        alignItems: 'center',
+        marginTop: '10vh'
+       }}
     >
-      <Box display="flex" flexDirection="column" gap="1rem">
-        <Link
-          href="https://forms.gle/xxwsm6TJSZ7zgntx9"
-          style={{ textDecoration: 'none', color: 'white' }}
-        >
-          <Typography>Become a Tutor!</Typography>
-        </Link>
-        {!session && <Typography>Tutor Login</Typography>}
-      </Box>
+      <Box sx={{ maxWidth: '1550px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%' }}>
+        <Box sx={{ height: '100%' }}>
+          <Box sx={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
+            <img src='/CS Tutoring Logo.png' width='14%' height='14%'/>
+            <Box>
+              <Typography sx={{ fontSize: '2rem', color: '#F7F7F7', fontFamily: 'Sumana', marginLeft: '1rem', width: '100%'}}>CS Tutoring at UC Davis</Typography>
+              <Typography sx={{ fontSize: '1rem', color: '#FFDE28', marginLeft: '1rem', width: '100%'}}>A free, peer-run service for UC Davis Students.</Typography>
+            </Box>
+          </Box>
 
-      <Box display="flex" flexDirection="column" gap="1rem">
-        <Link
-          href="https://discord.com/invite/HXfwHbYF7f"
-          target="_blank"
-          style={{ textDecoration: 'none', color: 'white' }}
-        >
-          <Typography>Discord</Typography>
-        </Link>
-        <Link
-          href="https://linktr.ee/cstutoringatucd"
-          target="_blank"
-          style={{ textDecoration: 'none', color: 'white' }}
-        >
-          <Typography>LinkTree</Typography>
-        </Link>
-        <Link
-          href="https://sites.google.com/view/cs-tutoring-ucd/tutoring-calendar?authuser=0"
-          target="_blank"
-          style={{ textDecoration: 'none', color: 'white' }}
-        >
-          <Typography>Calendar</Typography>
-        </Link>
-        <Link
-          href="https://www.youtube.com/@cstutoringatucd/featured"
-          target="_blank"
-          style={{ textDecoration: 'none', color: 'white' }}
-        >
-          <Typography>YouTube</Typography>
-        </Link>
-      </Box>
-
-      <Box
-        display="flex"
-        flexDirection="column"
-        textAlign="right"
-        justifyContent="space-between"
-      >
-        <Box>
-          <Typography fontSize={40} fontWeight={500}>
-            CS Tutoring
-          </Typography>
-          <Typography>@ UC Davis</Typography>
+          <Typography sx={{ fontSize: '1rem', marginTop: '5rem', marginBottom: '0.5rem', color: '#F7F7F7', fontFamily: 'Sumana' }} > Reach out to us at <span style={{ color: '#FFDE28' }}>cstutoring@ucdavis.edu</span> or any of our socials!</Typography>
+          <Box sx={{ display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'left', gap: '1rem', color: '#FFDE28' }}>
+            <Button variant='outlined'sx={{ fontSize: '1rem', borderColor: '#FFDE28', borderRadius: '8px', backgroundColor: '#242424', borderWidth: '0.1rem', fontFamily: 'Inter', paddingX: '1.5rem' }}>Discord</Button>
+            <Button variant='outlined'sx={{ fontSize: '1rem', borderColor: '#FFDE28', borderRadius: '8px', backgroundColor: '#242424', borderWidth: '0.1rem', fontFamily: 'Inter', paddingX: '1.5rem' }}>Instagram</Button>
+            <Button variant='outlined'sx={{ fontSize: '1rem', borderColor: '#FFDE28', borderRadius: '8px', backgroundColor: '#242424', borderWidth: '0.1rem', fontFamily: 'Inter', paddingX: '1.5rem'  }}>LinkTree</Button>
+          </Box>
         </Box>
-        <Typography>Copyright {currentYear}</Typography>
+
+        <Box sx={{ display: 'flex', marginTop: '7rem', flexDirection: 'column', gap: 10, alignItems: 'end' }}>
+          <Box sx={{ display: 'flex', flexDirection: 'row', gap: 5 }}>
+            <Typography sx={{ fontFamily: 'Sumana', fontSize: '1.25rem' }}>Home</Typography>
+            <Typography sx={{ fontFamily: 'Sumana', fontSize: '1.25rem' }}>About Us</Typography>
+            <Typography sx={{ fontFamily: 'Sumana', fontSize: '1.25rem' }}>Tutoring Hours</Typography>
+            <Typography sx={{ fontFamily: 'Sumana', fontSize: '1.25rem' }}>Log In</Typography>
+
+          </Box>
+          <img src="/Bongo Tiger PC Simplified.svg" alt="logo" width='60%' height='60%' />
+        </Box>
+
       </Box>
     </Box>
   );

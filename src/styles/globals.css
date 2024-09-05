@@ -1,8 +1,15 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
-
+@import url('https://fonts.googleapis.com/css2?family=Sumana:wght@400;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Hanuman:wght@100;300;400;700;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Sunflower:wght@300;500;700&display=swap');
 :root {
   --brand-color: #bd9f31;
 }
+
+body {
+  font-family: 'Inter', sans-serif;
+}
+
 
 .linear-gradient-text {
   background: -webkit-linear-gradient(var(--brand-color), #222);

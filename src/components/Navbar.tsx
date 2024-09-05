@@ -49,12 +49,13 @@ export default function Navbar() {
           alignItems="center"
           justifyContent="space-between"
           width="100%"
+          paddingLeft="3%"
         >
           <Box display="flex" gap="1rem" alignItems="center">
             <Link href="/">
               <Image src={logo} alt="logo" width={50} height={50} />
             </Link>
-            <Typography fontWeight={500}>CS Tutoring - UC Davis</Typography>
+            <Typography fontWeight={500}>CS Tutoring Club</Typography>
           </Box>
           <Box display="flex" gap="2rem" alignItems="center">
             <Link

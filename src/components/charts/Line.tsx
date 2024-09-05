@@ -56,11 +56,18 @@ const LineGraph: React.FC<LineGraphProps> = ({ title, entries, labels }) => {
   };
 
   return (
-    <>
-    <Box sx={{ width: '100%', maxWidth: '100%'}}>
-      <Line options={options} data={tempdata} />
+    <Box sx={{ 
+      width: '100%', 
+      height: { xs: '300px', sm: '400px', md: '500px' },
+      maxWidth: '100%', 
+      display: 'flex',
+      flexDirection: 'column',
+      mb: 2
+    }}>
+      <Box sx={{ flexGrow: 1, position: 'relative' }}>
+        <Line options={options} data={tempdata} />
+      </Box>
     </Box>
-    </>
   );
 };
 
