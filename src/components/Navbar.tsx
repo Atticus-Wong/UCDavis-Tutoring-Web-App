@@ -15,6 +15,7 @@ import { signIn, signOut, useSession } from 'next-auth/react';
 import { useState } from 'react';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
+import { OFF_WHITE } from '../utils/constants';
 
 export default function Navbar() {
   const { data: session } = useSession();
@@ -41,61 +42,67 @@ export default function Navbar() {
   };
 
   return (
-    <AppBar position="sticky" style={{ padding: '1rem' }}>
+    <AppBar position="sticky" style={{ padding: '1rem', backgroundColor: '#121211' }}>
       <Toolbar>
         <Box
-          display="flex"
-          gap="1rem"
-          alignItems="center"
-          justifyContent="space-between"
-          width="100%"
-          paddingLeft="3%"
+          sx={{ 
+            display: 'flex',
+            gap: '1rem',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            width: '100%',
+            marginX: '2.5rem'
+           }}
         >
-          <Box display="flex" gap="1rem" alignItems="center">
-            <Link href="/">
-              <Image src={logo} alt="logo" width={50} height={50} />
-            </Link>
-            <Typography fontWeight={500}>CS Tutoring Club</Typography>
+          <Box sx={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
+            <img src='/Subtract-11.svg' alt='logo'/>
+            <Typography sx={{ fontFamily: 'Sumana', fontSize: '1.5rem' }}>CS Tutoring Club at UC Davis</Typography>
           </Box>
           <Box display="flex" gap="2rem" alignItems="center">
-            <Link
-              href="https://forms.gle/xxwsm6TJSZ7zgntx9"
-              style={{ textDecoration: 'none', color: 'white', fontWeight: 'bold' }}
-            >
-              <Typography>Become a Tutor!</Typography>
-            </Link>
-            {!session ? (
-              <Button
-                variant="contained"
-                style={{ borderRadius: 20 }}
-                onClick={() => signIn('discord')}
-              >
-                <Typography color="white">Tutor Login</Typography>
-              </Button>
-            ) : (
-              <>
-                <IconButton
-                  aria-controls={open ? 'basic-menu' : undefined}
-                  aria-haspopup="true"
-                  aria-expanded={open ? 'true' : undefined}
-                  onClick={handleAvatarClick}
-                >
-                  <Avatar />
-                </IconButton>
-                <Menu
-                  id="basic-menu"
-                  anchorEl={anchorEl}
-                  open={open}
-                  onClose={handleClose}
-                  MenuListProps={{
-                    'aria-labelledby': 'basic-button'
+            <Box sx={{ display: 'flex', flexDirection: 'row', gap: 5 }}>
+              <Link href='/' style={{ textDecoration: 'none', color: '#F7F7F7' }}>
+                <Typography sx={{ fontFamily: 'Sumana', fontSize: '1.25rem' }}>Home</Typography>
+              </Link>
+              <Typography sx={{ fontFamily: 'Sumana', fontSize: '1.25rem' }}>About Us</Typography>
+              <Typography sx={{ fontFamily: 'Sumana', fontSize: '1.25rem' }}>Tutoring Hours</Typography>
+            </Box>
+              {!session ? (
+                <Button
+                  variant="text"
+                  onClick={() => signIn('discord')}
+                  sx={{ textTransform: 'none',
+                        '&:hover': {
+                        backgroundColor: '#272727',  // Keep the same background color on hover
+                        },
                   }}
                 >
-                  <MenuItem onClick={handleMyAccount}>My account</MenuItem>
-                  <MenuItem onClick={handleLogout}>Logout</MenuItem>
-                </Menu>
-              </>
-            )}
+                  <Typography sx={{ color: '#FFDE28', fontFamily: 'Sumana', fontSize: '1.25rem' }}>Log in</Typography>
+                </Button>
+
+              ) : (
+                <>
+                  <IconButton
+                    aria-controls={open ? 'basic-menu' : undefined}
+                    aria-haspopup="true"
+                    aria-expanded={open ? 'true' : undefined}
+                    onClick={handleAvatarClick}
+                  >
+                    <Avatar />
+                  </IconButton>
+                  <Menu
+                    id="basic-menu"
+                    anchorEl={anchorEl}
+                    open={open}
+                    onClose={handleClose}
+                    MenuListProps={{
+                      'aria-labelledby': 'basic-button'
+                    }}
+                  >
+                    <MenuItem onClick={handleMyAccount}>My account</MenuItem>
+                    <MenuItem onClick={handleLogout}>Logout</MenuItem>
+                  </Menu>
+                </>
+              )}
           </Box>
         </Box>
       </Toolbar>

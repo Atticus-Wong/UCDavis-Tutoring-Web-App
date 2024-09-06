@@ -6,7 +6,7 @@ import { useState } from "react"
 
 // https://mui.com/material-ui/react-accordion/
 const FAQ = () => {
-  const [expanded, setExpanded] = useState<string | false>('panel1');
+  const [expanded, setExpanded] = useState<string | false>('');
 
   const handleChange =
   (panel: string) => (event: React.SyntheticEvent, newExpanded: boolean) => {

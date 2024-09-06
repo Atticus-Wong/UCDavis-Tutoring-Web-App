@@ -16,6 +16,7 @@ export default function Document(props: DocumentProps & DocumentHeadTagsProps) {
   return (
     <Html lang="en">
       <Head>
+        <link rel='icon' href='/Subtract-11.svg'></link>
         <DocumentHeadTags {...props} />
       </Head>
       <body>
