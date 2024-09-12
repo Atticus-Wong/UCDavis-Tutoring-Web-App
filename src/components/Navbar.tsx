@@ -9,19 +9,18 @@ import {
   Toolbar,
   Typography
 } from '@mui/material';
-import Image from 'next/image';
-import logo from '@/public/tutoring-logo.svg';
 import { signIn, signOut, useSession } from 'next-auth/react';
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
-import { OFF_WHITE } from '../utils/constants';
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore"
 
 export default function Navbar() {
   const { data: session } = useSession();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const router = useRouter();
   const open = Boolean(anchorEl);
+  const buttonRef = useRef<HTMLButtonElement | null>(null);
 
   const handleAvatarClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget);
@@ -41,6 +40,21 @@ export default function Navbar() {
     signOut();
   };
 
+  const discordSignIn = () => {
+    signIn('discord');
+  }
+
+  // transforming anchor origin to correct location
+  useEffect(() => {
+    if (buttonRef.current) {
+      setAnchorEl(buttonRef.current);
+
+      setTimeout(() => {
+        handleClose();
+      }, 0); 
+    }
+  }, []);
+
   return (
     <AppBar position="sticky" style={{ padding: '1rem', backgroundColor: '#121211' }}>
       <Toolbar>
@@ -51,7 +65,8 @@ export default function Navbar() {
             alignItems: 'center',
             justifyContent: 'space-between',
             width: '100%',
-            marginX: '2.5rem'
+            marginLeft: '16vh',
+            marginRight: '15vh'
            }}
         >
           <Box sx={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
@@ -67,18 +82,77 @@ export default function Navbar() {
               <Typography sx={{ fontFamily: 'Sumana', fontSize: '1.25rem' }}>Tutoring Hours</Typography>
             </Box>
               {!session ? (
-                <Button
-                  variant="text"
-                  onClick={() => signIn('discord')}
-                  sx={{ textTransform: 'none',
-                        '&:hover': {
-                        backgroundColor: '#272727',  // Keep the same background color on hover
-                        },
-                  }}
-                >
-                  <Typography sx={{ color: '#FFDE28', fontFamily: 'Sumana', fontSize: '1.25rem' }}>Log in</Typography>
-                </Button>
-
+                <>
+                  <Button
+                    id='menu-button-id'
+                    ref={buttonRef}
+                    variant="text"
+                    sx={{ textTransform: 'none',
+                          '&:hover': {
+                          backgroundColor: '#272727',  
+                          },
+                          display: 'flex',
+                          alignItems: 'center',
+                    }}
+                    
+                    aria-controls={open ? 'basic-menu' : undefined}
+                    aria-haspopup="true"
+                    aria-expanded={open ? 'true' : undefined}
+                    onClick={handleAvatarClick}
+                  >
+                      <Typography 
+                        sx={{ 
+                          background: 'linear-gradient(90deg, #978000 0%, #FFDE28 17%, #FFFFEC 43%, #FFDE28 81%, #978000 100%)',
+                          WebkitBackgroundClip: 'text',
+                          MozBackgroundClip: 'text',
+                          backgroundClip: 'text',
+                          WebkitTextFillColor: 'transparent',
+                          MozTextFillColor: 'transparent',
+                          color: 'transparent', 
+                          fontFamily: 'Sumana', 
+                          fontSize: '1.25rem'
+                        }}
+                      >
+                        Log in 
+                      </Typography>
+                      <ExpandMoreIcon 
+                      sx={{ background: 'linear-gradient(90deg, #978000 0%, #FFDE28 17%, #FFFFEC 43%, #FFDE28 81%, #978000 100%)',
+                      WebkitBackgroundClip: 'text',
+                      MozBackgroundClip: 'text',
+                      backgroundClip: 'text',
+                      WebkitTextFillColor: 'transparent',
+                      MozTextFillColor: 'transparent',
+                      fontFamily: 'Sumana', 
+                      fontSize: '1.5rem'
+                    }} />
+                  </Button>
+                  <Menu
+                    id="basic-menu"
+                    anchorEl={anchorEl}
+                    open={open}
+                    onClose={handleClose}
+                    MenuListProps={{
+                      'aria-labelledby': 'basic-button'
+                    }}
+                    anchorOrigin={{
+                      vertical: 'bottom',
+                      horizontal: 'right', 
+                    }}
+                    transformOrigin={{
+                      vertical: 'top',
+                      horizontal: 'right', 
+                    }}
+                    PaperProps={{
+                      sx: { 
+                        backgroundColor: 'black',
+                      },
+                    }}
+                  >
+                    <MenuItem onClick={discordSignIn} sx={{ '&:hover': { backgroundColor: 'transparent', }, }} >
+                      <img src='discord login.svg' alt='logo' />
+                    </MenuItem>
+                  </Menu>
+                </>
               ) : (
                 <>
                   <IconButton

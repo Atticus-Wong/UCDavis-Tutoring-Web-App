@@ -72,8 +72,6 @@ const Dashboard: React.FC<DashboardProps> = ({ attendance, helpSession }) => {
     minutes: millisecondsToHourMinutes(milliseconds).minutes
   }));
 
-  console.log(tutorHoursData);
-
   const columns: ColumnDef<TutorHours>[] = useMemo(() => [
     {
       id: 'displayName',

@@ -37,7 +37,7 @@ const FAQ = () => {
         <AccordionDetails 
         sx={{ backgroundColor: '#191918' }}>
           <Typography sx={{ fontSize: '1rem', color: {OFF_WHITE} }}>
-            No, you don't! There is no sign up process to receive our tutoring services. 
+            <strong>No, you don't!</strong> There is no sign up process to receive our tutoring services. 
             You just need to join our Discord server and get verified with your UC Davis email. 
             And, voilà! You can access all of our tutoring services!
           </Typography>

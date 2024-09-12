@@ -7,32 +7,17 @@ import Select, { SelectChangeEvent } from '@mui/material/Select';
 import { getDocs } from 'firebase/firestore';
 import { serverBackupsCol } from '../utils/firebase';
 import { useSelectedServer } from '../utils/atom';
-// import { getUserServers } from '../pages/api/discord';
-// import { useSession } from 'next-auth/react';
+import axios from 'axios';
+import { useSession } from 'next-auth/react';
 
 
 export default function ServerSelect() {
+  const { data: session, status } = useSession();
+  const [userGuildIds, setUserGuildIds] = useState<string[]>();
   const [selectedServer, setSelectedServer] = useSelectedServer();
-  const [servers, setServers] = useState<Server[]>();
-  //  const [userServers, setUserServers] = useState<Server[]>([]);
-  // const { data: session } = useSession();
-  /*
-  useEffect(() => {
-    if (session) {
-      const fetchUserServers = async () => {
-        try {
-          const userServers = await getUserServers(session.accessToken as string);
-          console.log('User Servers:', userServers);
-        } catch (error) {
-          console.error('Error fetching user servers:', error);
-        }
-        setUserServers(userServers);
-      };
+  const [firebaseServers, setFirebaseSetServers] = useState<Server[]>();
+  const [filteredServers, setFilteredServers] = useState<Server[]>();
 
-      fetchUserServers();
-    }
-  }, []);
-  */
   useEffect(() => {
     const getFirebaseData = async () => {
       await getDocs(serverBackupsCol).then(snapshot => {
@@ -43,16 +28,61 @@ export default function ServerSelect() {
             server: doc.data()
           })
         );
-        setServers(servers);
-        setSelectedServer(servers[0]);
+        setFirebaseSetServers(servers);
+        setSelectedServer(servers[0])
       });
     };
 
     getFirebaseData();
-  }, [setSelectedServer]);
+  }, []);
+
+  useEffect(() => {
+    const getUserGuilds = async () => {
+      try {
+        if (!session) {
+          return;
+        }
+        const response = await axios('/api/userServers', 
+          {
+            method: 'GET',
+            headers: {
+            Authorization: `Bearer ${session.accessToken}`,
+            'Content-Type': 'application/json'
+          }
+        });
+        setUserGuildIds(response.data);
+
+      } catch (err) {
+        console.error('test', err);
+      }
+    };
+
+    getUserGuilds();
+  }, [session]);
+
+  useEffect(() => {
+    if (!Array.isArray(userGuildIds) || userGuildIds.length === 0 || !firebaseServers) {
+      return;
+    }
+    const serversWithBot: Server[] = firebaseServers.filter(server => 
+      userGuildIds.includes(server.id)
+    );
+    setFilteredServers(serversWithBot)
+    // setFilteredServers(serversWithBot);
+    // if (!selectedServer || !serversWithBot.some(s => s.id === selectedServer.id)) {
+    //   setSelectedServer(serversWithBot[0] || null);
+    // }
+  }, [userGuildIds, firebaseServers, selectedServer, setSelectedServer])
+
+  useEffect(() => {
+    console.log('userGuildIds:', userGuildIds);
+    console.log('firebaseServers:', firebaseServers);
+    console.log('filteredServers:', filteredServers);
+  }, [userGuildIds, firebaseServers, filteredServers]);
+
 
   const handleChange = (event: SelectChangeEvent) => {
-    setSelectedServer(servers?.find(server => server.id === event.target.value));
+    setSelectedServer(firebaseServers?.find(server => server.id === event.target.value));
   };
 
   return (
@@ -67,8 +97,8 @@ export default function ServerSelect() {
             label="Server"
             onChange={handleChange}
           >
-            {servers &&
-              servers.map(server => (
+            {firebaseServers &&
+              firebaseServers.map(server => (
                 <MenuItem key={server.id} value={server.id}>
                   {server.server.serverName}
                 </MenuItem>

@@ -1,15 +1,13 @@
-// Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 import { auth } from '@/src/server/auth';
 import { API_VERSION } from '@/src/utils/constants';
 import axios from 'axios';
 import type { NextApiRequest, NextApiResponse } from 'next';
 
-/**
- * Send request to Discord's API using OAuth token
- * @param req
- * @param res
- * @returns guild object for all guilds that user is apart of
- */
+type Guild = {
+  id: string,
+  name: string
+}
+
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   const session = await auth(req, res);
 
@@ -18,16 +16,18 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     return;
   }
 
-  const response = await axios(
-    `https://discord.com/api/v${API_VERSION}/users/@me/guilds`,
-    {
-      method: 'GET',
+  try {
+    const response = await axios.get<Guild[]>(`https://discord.com/api/v${API_VERSION}/users/@me/guilds`, {
       headers: {
         Authorization: `Bearer ${session.accessToken}`,
-        'Content-Type': 'application/json'
-      }
-    }
-  );
+      },
+    });
 
-  res.status(200).json(response.data);
+    const guildIds = response.data.map(guild => guild.id);
+
+    res.status(200).json({ guildIds });
+  } catch (error) {
+    console.error('Error fetching guilds:', error);
+    res.status(500).json({ error: 'Failed to fetch guilds' });
+  }
 }

@@ -14,7 +14,7 @@ export default function Footer() {
         display: 'flex',
         backgroundColor: '#242424',
         justifyContent: 'center',
-        paddingX: '10vh',
+        paddingX: '20vh',
         paddingBottom: '10vh',
         alignItems: 'center',
         marginTop: '10vh'
@@ -68,7 +68,19 @@ export default function Footer() {
             <Typography sx={{ fontFamily: 'Sumana', fontSize: '1.25rem' }}>About Us</Typography>
             <Typography sx={{ fontFamily: 'Sumana', fontSize: '1.25rem' }}>Tutoring Hours</Typography>
               {!session ? (
-                  <Typography onClick={() => signIn('discord')} sx={{ color: '#FFDE28', fontFamily: 'Sumana', fontSize: '1.25rem', cursor: 'pointer' }}>Log in</Typography>
+                  <Typography 
+                    onClick={() => signIn('discord')} 
+                    sx={{ 
+                    background: 'linear-gradient(90deg, #978000 0%, #FFDE28 17%, #FFFFEC 43%, #FFDE28 81%, #978000 100%)',
+                    WebkitBackgroundClip: 'text',
+                    MozBackgroundClip: 'text',
+                    backgroundClip: 'text',
+                    WebkitTextFillColor: 'transparent',
+                    MozTextFillColor: 'transparent',
+                    color: 'transparent', 
+                    fontFamily: 'Sumana', 
+                    fontSize: '1.25rem'
+                  }}>Log in</Typography>
               ) : (
                 <>
                 </>

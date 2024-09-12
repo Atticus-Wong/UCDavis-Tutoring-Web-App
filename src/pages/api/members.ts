@@ -1,7 +1,5 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 import { auth } from '@/src/server/auth';
-import { API_VERSION } from '@/src/utils/constants';
-import axios from 'axios';
 import type { NextApiRequest, NextApiResponse } from 'next';
 
 

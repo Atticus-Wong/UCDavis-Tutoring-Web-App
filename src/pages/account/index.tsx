@@ -7,7 +7,6 @@ import { Box, Button, Typography } from '@mui/material';
 import axios from 'axios';
 import { APIGuild, APIGuildMember } from 'discord-api-types/v10';
 import { useSession } from 'next-auth/react';
-import { redirect } from 'next/dist/server/api-utils';
 import { useEffect, useState } from 'react';
 
 export default function AccountPage() {

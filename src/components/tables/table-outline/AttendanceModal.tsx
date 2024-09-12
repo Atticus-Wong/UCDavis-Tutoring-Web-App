@@ -29,7 +29,7 @@ type FloatingFormProps = {
   */
 function FloatingForm({ onClose, data, entry, setData }: FloatingFormProps) {
 
-  // entryIndex: determines which entry in firebase is displayed by selected row
+  // firebase attendance entry checker
   const entryIndex = data.findIndex(item => (
     item.activeTimeMs === entry.activeTimeMs &&
     item.helpStartUnixMs === entry.helpStartUnixMs &&
