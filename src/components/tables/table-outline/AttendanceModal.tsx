@@ -175,7 +175,7 @@ function AttendanceModal({ entries, entry, setData }: AttendanceFormModalProps) 
       </Button>
       {isFormOpen && (
         <>
-          <Overlay isVisible={isFormOpen} />
+          <Overlay isVisible={isFormOpen} onClose={handleCloseForm} zIndex={1200}/>
           <FloatingForm onClose={handleCloseForm} data={entries} entry={entry} setData={setData} />
         </>
       )}

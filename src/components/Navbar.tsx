@@ -7,13 +7,16 @@ import {
   Menu,
   MenuItem,
   Toolbar,
-  Typography
+  Typography,
+  useMediaQuery,
+  useTheme
 } from '@mui/material';
 import { signIn, signOut, useSession } from 'next-auth/react';
 import { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore"
+import HamburgerMenu from './HamburgerMenu';
 
 export default function Navbar() {
   const { data: session } = useSession();
@@ -21,7 +24,20 @@ export default function Navbar() {
   const router = useRouter();
   const open = Boolean(anchorEl);
   const buttonRef = useRef<HTMLButtonElement | null>(null);
+  const theme = useTheme();
+  const isMd = useMediaQuery(theme.breakpoints.up('md'));
+  const isSm = useMediaQuery(theme.breakpoints.down('sm'));
 
+
+  const gradientstyle = {
+    background: 'linear-gradient(90deg, #978000 0%, #FFDE28 17%, #FFFFEC 43%, #FFDE28 81%, #978000 100%)',
+    WebkitBackgroundClip: 'text',
+    MozBackgroundClip: 'text',
+    backgroundClip: 'text',
+    WebkitTextFillColor: 'transparent',
+    MozTextFillColor: 'transparent',
+    fontFamily: 'Sumana',  
+  }
   const handleAvatarClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget);
   };
@@ -56,7 +72,7 @@ export default function Navbar() {
   }, []);
 
   return (
-    <AppBar position="sticky" style={{ padding: '1rem', backgroundColor: '#121211' }}>
+    <AppBar position="sticky" style={{ padding: '1rem', backgroundColor: '#121212', zIndex: '1100' }}>
       <Toolbar>
         <Box
           sx={{ 
@@ -65,22 +81,28 @@ export default function Navbar() {
             alignItems: 'center',
             justifyContent: 'space-between',
             width: '100%',
-            marginLeft: '16vh',
-            marginRight: '15vh'
+            marginLeft: {md: '16vh', sm: '1vh', xs: '6%'},
+            marginRight: {md: '15vh', sm: '1vh', xs: '0%'}
            }}
         >
-          <Box sx={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
+          {isSm && <Box></Box>}
+          <Box sx={{ display: 'flex', gap: '1rem', alignItems: 'center'  }}>
             <img src='/Subtract-11.svg' alt='logo'/>
-            <Typography sx={{ fontFamily: 'Sumana', fontSize: '1.5rem' }}>CS Tutoring Club at UC Davis</Typography>
+            {!isSm && <Typography sx={{ fontFamily: 'Sumana', fontSize: {sm: '1rem', md: '1.5rem'} }}>CS Tutoring Club at UC Davis</Typography>}
           </Box>
+          { !isSm ? (
           <Box display="flex" gap="2rem" alignItems="center">
-            <Box sx={{ display: 'flex', flexDirection: 'row', gap: 5 }}>
-              <Link href='/' style={{ textDecoration: 'none', color: '#F7F7F7' }}>
-                <Typography sx={{ fontFamily: 'Sumana', fontSize: '1.25rem' }}>Home</Typography>
-              </Link>
-              <Typography sx={{ fontFamily: 'Sumana', fontSize: '1.25rem' }}>About Us</Typography>
-              <Typography sx={{ fontFamily: 'Sumana', fontSize: '1.25rem' }}>Tutoring Hours</Typography>
-            </Box>
+              <Box sx={{ display: 'flex', flexDirection: 'row', gap: 5 }}>
+                <Link href='/' style={{ textDecoration: 'none', color: '#F7F7F7' }}>
+                  <Typography sx={{ fontFamily: 'Sumana', fontSize: {sm: '1rem', md: '1.25rem'} }}>Home</Typography>
+                </Link>
+                {/* <Typography sx={{ fontFamily: 'Sumana', fontSize: '1.25rem' }}>About Us</Typography> */}
+                <Link href='/TutoringHours' style={{textDecoration: 'none', color: '#F7F7F7'}}>
+                
+                  <Typography sx={{ fontFamily: 'Sumana', fontSize: {sm: '1rem', md: '1.25rem'} }}>Tutoring Hours</Typography>
+                </Link>
+              </Box>
+              
               {!session ? (
                 <>
                   <Button
@@ -100,31 +122,8 @@ export default function Navbar() {
                     aria-expanded={open ? 'true' : undefined}
                     onClick={handleAvatarClick}
                   >
-                      <Typography 
-                        sx={{ 
-                          background: 'linear-gradient(90deg, #978000 0%, #FFDE28 17%, #FFFFEC 43%, #FFDE28 81%, #978000 100%)',
-                          WebkitBackgroundClip: 'text',
-                          MozBackgroundClip: 'text',
-                          backgroundClip: 'text',
-                          WebkitTextFillColor: 'transparent',
-                          MozTextFillColor: 'transparent',
-                          color: 'transparent', 
-                          fontFamily: 'Sumana', 
-                          fontSize: '1.25rem'
-                        }}
-                      >
-                        Log in 
-                      </Typography>
-                      <ExpandMoreIcon 
-                      sx={{ background: 'linear-gradient(90deg, #978000 0%, #FFDE28 17%, #FFFFEC 43%, #FFDE28 81%, #978000 100%)',
-                      WebkitBackgroundClip: 'text',
-                      MozBackgroundClip: 'text',
-                      backgroundClip: 'text',
-                      WebkitTextFillColor: 'transparent',
-                      MozTextFillColor: 'transparent',
-                      fontFamily: 'Sumana', 
-                      fontSize: '1.5rem'
-                    }} />
+                      <Typography sx={{ ...gradientstyle, fontSize: {sm: '1rem', md: '1.25rem'} }} > Log in </Typography>
+                      <ExpandMoreIcon sx={{ ...gradientstyle, fontSize: {sm: '1rem', md: '1.5rem'} }} />
                   </Button>
                   <Menu
                     id="basic-menu"
@@ -178,6 +177,11 @@ export default function Navbar() {
                 </>
               )}
           </Box>
+          ) : (
+            <>
+              <HamburgerMenu />
+            </>
+          )}
         </Box>
       </Toolbar>
     </AppBar>

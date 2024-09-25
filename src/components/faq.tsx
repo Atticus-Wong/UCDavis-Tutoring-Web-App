@@ -18,25 +18,24 @@ const FAQ = () => {
       marginTop: '15vh',
       display: 'flex', 
       justifyContent: 'left', 
-      marginLeft: '10vh', 
-      marginRight: '10vh',
+      marginX: {xs: '7%', sm: '5vh', md: '10vh'}, 
       backgroundColor: '#191918',
       flexDirection: 'column'
       }}>
         <Box sx={{ width: '100%' }}>
-        <Typography sx={{ width: '100%', fontFamily: 'Hanuman' }}>FAQ</Typography></Box>
+        <Typography fontFamily='Hanuman' fontSize={{xs: '1rem', sm: '1.5rem', md: '2rem'}}>FAQ</Typography></Box>
       <Accordion sx={{ backgroundColor: '#191918', width: '100%', boxShadow: 'none', marginTop: '1rem' }} expanded={expanded === 'panel1'} onChange={handleChange('panel1')}>
         <AccordionSummary 
           sx={{ backgroundColor: '#191918', width: '100%' }}           
           aria-controls="panel1a-content"
           id="panel1a-header"
-          expandIcon={<ExpandMoreIcon fontSize="small"/>}
+          expandIcon={<ExpandMoreIcon fontSize="small" sx={{ marginLeft: '0.5rem', fontSize: {xs: '1.25rem', sm: '1.5rem', md: '2rem'} }}/>}
           >
-          <Typography sx={{ backgroundColor: '#191918', fontSize: '1rem', color: {OFF_WHITE} }}>Do I need to sign up for CS Tutoring Club to get tutoring?</Typography>
+          <Typography sx={{ backgroundColor: '#191918', fontSize: {xs: '0.85rem', sm: '0.85rem', md: '1rem'}, }}>Do I need to sign up for CS Tutoring Club to get tutoring?</Typography>
         </AccordionSummary>
         <AccordionDetails 
         sx={{ backgroundColor: '#191918' }}>
-          <Typography sx={{ fontSize: '1rem', color: {OFF_WHITE} }}>
+          <Typography sx={{ fontSize: {xs: '0.85rem', sm: '0.85rem', md: '1rem'}, }}>
             <strong>No, you don't!</strong> There is no sign up process to receive our tutoring services. 
             You just need to join our Discord server and get verified with your UC Davis email. 
             And, voilà! You can access all of our tutoring services!
@@ -49,13 +48,13 @@ const FAQ = () => {
           sx={{ backgroundColor: '#191918', width: '100%' }}           
           aria-controls="panel1a-content"
           id="panel1a-header"
-          expandIcon={<ExpandMoreIcon fontSize="small"/>}
+          expandIcon={<ExpandMoreIcon fontSize="small" sx={{ fontSize: {xs: '1.25rem', sm: '1.5rem', md: '2rem'} }}/>}
           >
-          <Typography sx={{ backgroundColor: '#191918', fontSize: '1rem', color: {OFF_WHITE} }}>Do you have tutors for my class?</Typography>
+          <Typography sx={{ backgroundColor: '#191918', fontSize: {xs: '0.85rem', sm: '0.85rem', md: '1rem'}, }}>Do you have tutors for my class?</Typography>
         </AccordionSummary>
         <AccordionDetails 
         sx={{ backgroundColor: '#191918' }}>
-          <Typography sx={{ fontSize: '1rem', color: {OFF_WHITE} }}>
+          <Typography sx={{ fontSize: {xs: '0.85rem', sm: '0.85rem', md: '1rem'},  }}>
           Every quarter, we tutor every lower division course: the ECS 32 and 36 series, and ECS 50; and mandatory upper-division classes for the CS and CSE majors: 
           ECS 120, 140, 150, 154A, etc. We also offer tutoring based on tutor availability for other courses for that quarter.
           </Typography>
@@ -67,13 +66,13 @@ const FAQ = () => {
           sx={{ backgroundColor: '#191918', width: '100%' }}           
           aria-controls="panel1a-content"
           id="panel1a-header"
-          expandIcon={<ExpandMoreIcon fontSize="small"/>}
+          expandIcon={<ExpandMoreIcon fontSize="small" sx={{ fontSize: {xs: '1.25rem', sm: '1.5rem', md: '2rem'} }} />}
           >
-          <Typography sx={{ backgroundColor: '#191918', fontSize: '1rem', color: {OFF_WHITE} }}>How are tutors selected?</Typography>
+          <Typography sx={{ backgroundColor: '#191918', fontSize: {xs: '0.85rem', sm: '0.85rem', md: '1rem'},}}>How are tutors selected?</Typography>
         </AccordionSummary>
         <AccordionDetails 
         sx={{ backgroundColor: '#191918' }}>
-          <Typography sx={{ fontSize: '1rem', color: {OFF_WHITE} }}>
+          <Typography sx={{ fontSize: {xs: '0.85rem', sm: '0.85rem', md: '1rem'}, }}>
           We release our tutor application during the first two weeks of the quarter. To be a tutor for lower-division classes, 
           they must have received a B+ or higher grade in that class. For upper-division classes, they must have received an A- or higher grade.
           </Typography>
@@ -85,13 +84,13 @@ const FAQ = () => {
           sx={{ backgroundColor: '#191918', width: '100%' }}           
           aria-controls="panel1a-content"
           id="panel1a-header"
-          expandIcon={<ExpandMoreIcon fontSize="small"/>}
+          expandIcon={<ExpandMoreIcon fontSize="small" sx={{ fontSize: {xs: '1.25rem', sm: '1.5rem', md: '2rem'} }} />}
           >
-          <Typography sx={{ backgroundColor: '#191918', fontSize: '1rem', color: {OFF_WHITE} }}>Is tutoring offered during the Summer?</Typography>
+          <Typography sx={{ backgroundColor: '#191918', fontSize: {xs: '0.85rem', sm: '0.85rem', md: '1rem'}, color: {OFF_WHITE} }}>Is tutoring offered during the Summer?</Typography>
         </AccordionSummary>
         <AccordionDetails 
         sx={{ backgroundColor: '#191918' }}>
-          <Typography sx={{ fontSize: '1rem', color: {OFF_WHITE} }}>
+          <Typography sx={{ fontSize: {xs: '0.85rem', sm: '0.85rem', md: '1rem'} }}>
           Tutoring is not offered during the summer, but feel free to join our Discord server and reach out to anyone with the "Tutor" and "DMs Opened" role for help.
           </Typography>
         </AccordionDetails>

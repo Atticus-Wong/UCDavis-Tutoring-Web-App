@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import Box from '@mui/material/Box';
 import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
@@ -10,27 +10,33 @@ import { useSelectedServer } from '../utils/atom';
 import axios from 'axios';
 import { useSession } from 'next-auth/react';
 
+interface UserGuildIds {
+  guildIds: string[];
+}
 
 export default function ServerSelect() {
   const { data: session, status } = useSession();
-  const [userGuildIds, setUserGuildIds] = useState<string[]>();
+  const [userGuildIds, setUserGuildIds] = useState<UserGuildIds>({ guildIds: [] });
   const [selectedServer, setSelectedServer] = useSelectedServer();
-  const [firebaseServers, setFirebaseSetServers] = useState<Server[]>();
-  const [filteredServers, setFilteredServers] = useState<Server[]>();
+  const [firebaseServers, setFirebaseServers] = useState<Server[]>([]);
+
+  // Compute filteredServers based on firebaseServers and userGuildIds
+  const filteredServers = useMemo(() => {
+    return firebaseServers.filter(server => userGuildIds.guildIds.includes(server.id));
+  }, [firebaseServers, userGuildIds.guildIds]);
 
   useEffect(() => {
     const getFirebaseData = async () => {
-      await getDocs(serverBackupsCol).then(snapshot => {
-        const servers: Server[] = [];
-        snapshot.docs.forEach(doc =>
-          servers.push({
-            id: doc.id,
-            server: doc.data()
-          })
-        );
-        setFirebaseSetServers(servers);
-        setSelectedServer(servers[0])
-      });
+      try {
+        const snapshot = await getDocs(serverBackupsCol);
+        const servers: Server[] = snapshot.docs.map(doc => ({
+          id: doc.id,
+          server: doc.data()
+        }));
+        setFirebaseServers(servers);
+      } catch (error) {
+        console.error('Error fetching Firebase data:', error);
+      }
     };
 
     getFirebaseData();
@@ -38,71 +44,68 @@ export default function ServerSelect() {
 
   useEffect(() => {
     const getUserGuilds = async () => {
+      if (!session) return;
+
       try {
-        if (!session) {
-          return;
-        }
-        const response = await axios('/api/userServers', 
-          {
-            method: 'GET',
-            headers: {
+        const response = await axios.get<UserGuildIds>('/api/userServers', {
+          headers: {
             Authorization: `Bearer ${session.accessToken}`,
             'Content-Type': 'application/json'
           }
         });
-        setUserGuildIds(response.data);
-
+        if (response.data && Array.isArray(response.data.guildIds)) {
+          setUserGuildIds(response.data);
+        } else {
+          console.error('Unexpected response data format:', response.data);
+          setUserGuildIds({ guildIds: [] });
+        }
       } catch (err) {
-        console.error('test', err);
+        console.error('Error fetching user guilds:', err);
+        setUserGuildIds({ guildIds: [] });
       }
     };
 
     getUserGuilds();
-  }, [session]);
+  }, []);
 
+  // Update selectedServer when filteredServers changes
   useEffect(() => {
-    if (!Array.isArray(userGuildIds) || userGuildIds.length === 0 || !firebaseServers) {
-      return;
-    }
-    const serversWithBot: Server[] = firebaseServers.filter(server => 
-      userGuildIds.includes(server.id)
-    );
-    setFilteredServers(serversWithBot)
-    // setFilteredServers(serversWithBot);
-    // if (!selectedServer || !serversWithBot.some(s => s.id === selectedServer.id)) {
-    //   setSelectedServer(serversWithBot[0] || null);
-    // }
-  }, [userGuildIds, firebaseServers, selectedServer, setSelectedServer])
-
-  useEffect(() => {
-    console.log('userGuildIds:', userGuildIds);
-    console.log('firebaseServers:', firebaseServers);
-    console.log('filteredServers:', filteredServers);
-  }, [userGuildIds, firebaseServers, filteredServers]);
-
+    if (filteredServers.length > 0) {
+      if (!selectedServer || !filteredServers.some(s => s.id === selectedServer.id)) {
+        setSelectedServer(filteredServers[0]);
+      }
+    } 
+  }, [filteredServers, selectedServer, setSelectedServer]);
 
   const handleChange = (event: SelectChangeEvent) => {
-    setSelectedServer(firebaseServers?.find(server => server.id === event.target.value));
+    const newServer = filteredServers.find(server => server.id === event.target.value);
+    if (newServer) {
+      setSelectedServer(newServer);
+    }
   };
+
+  useEffect(() => {
+    console.log(filteredServers)
+
+  }, [])
 
   return (
     <Box sx={{ minWidth: 120 }}>
       <FormControl fullWidth>
-        <InputLabel id="demo-simple-select-label">Server</InputLabel>
-        {selectedServer && (
+        <InputLabel id="server-select-label">Server</InputLabel>
+        {filteredServers.length > 0 && (
           <Select
             labelId="server-select-label"
             id="server-select"
-            value={selectedServer.id}
+            value={selectedServer?.id || ''}
             label="Server"
             onChange={handleChange}
           >
-            {firebaseServers &&
-              firebaseServers.map(server => (
-                <MenuItem key={server.id} value={server.id}>
-                  {server.server.serverName}
-                </MenuItem>
-              ))}
+            {filteredServers.map(server => (
+              <MenuItem key={server.id} value={server.id}>
+                {server.server.serverName}
+              </MenuItem>
+            ))}
           </Select>
         )}
       </FormControl>

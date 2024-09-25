@@ -1,4 +1,4 @@
-import { Box, Typography, Button } from '@mui/material';
+import { Box, Typography, Button, useMediaQuery, useTheme } from '@mui/material';
 import { BRAND_COLOR } from '../utils/constants';
 import { useSession } from 'next-auth/react';
 import Link from 'next/link';
@@ -7,87 +7,103 @@ import { signIn } from 'next-auth/react';
 export default function Footer() {
   const { data: session } = useSession();
   const currentYear = new Date().getFullYear();
+  const theme = useTheme();
+  const isMd = useMediaQuery(theme.breakpoints.down('md'));
+  const isSm = useMediaQuery(theme.breakpoints.down('sm'));
+  const buttonStyle = {
+    paddingY: '0.5rem', 
+    gap: 1, 
+    fontSize: '1rem', 
+    borderColor: '#FFDE28', 
+    borderRadius: '8px', 
+    backgroundColor: '#242424', 
+    borderWidth: '0.1rem', 
+    fontFamily: 'Sunflower'
+  }
+
+  const gradientTextStyle = {
+    background: 'linear-gradient(90deg, #978000 0%, #FFDE28 17%, #FFFFEC 43%, #FFDE28 81%, #978000 100%)',
+    WebkitBackgroundClip: 'text',
+    MozBackgroundClip: 'text',
+    backgroundClip: 'text',
+    WebkitTextFillColor: 'transparent',
+    MozTextFillColor: 'transparent',
+    color: 'transparent', 
+    fontFamily: 'Sumana', 
+    fontSize: '1.25rem',
+    cursor: 'pointer', 
+  }
 
   return (
-    <Box
-      sx={{ 
-        display: 'flex',
-        backgroundColor: '#242424',
-        justifyContent: 'center',
-        paddingX: '20vh',
-        paddingBottom: '10vh',
-        alignItems: 'center',
-        marginTop: '10vh'
-       }}
-    >
-      <Box sx={{ maxWidth: '1550px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%' }}>
-        <Box sx={{ height: '100%' }}>
-          <Box sx={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
+    <Box display='flex' paddingX={{sm: '5%', md: '20vh'}} justifyContent='center' alignItems='center' marginTop='10vh' paddingBottom='10vh' paddingTop={{xs: '3rem', sm: '3rem', md: '0rem'}} sx={{ backgroundColor: '#242424' }} >
+      <Box maxWidth='1550px' display='flex' justifyContent={{xs: 'center', sm: 'center', md: 'space-between'}} alignItems='center' width='100%'>
+        <Box height='100%' sx={{ display: {xs: 'flex', sm: 'flex'}, flexDirection: {xs: 'column', sm: 'column'}, alignItems: {xs: 'center', sm: 'center', md: 'start'}, }} justifyContent={{xs: 'center', sm: 'center', md: 'left' }}>
+          <Box display='flex' flexDirection={{xs: 'column', sm: 'column', md: 'row'}} alignItems='center' textAlign={{xs: 'center', sm: 'center'}} justifyContent={{xs: 'center', sm: 'center', md: 'left'}}>
             <img src='/CS Tutoring Logo.png' width='14%' height='14%'/>
             <Box>
-              <Typography sx={{ fontSize: '2rem', color: '#F7F7F7', fontFamily: 'Sumana', marginLeft: '1rem', width: '100%'}}>CS Tutoring at UC Davis</Typography>
-              <Typography sx={{ fontSize: '1rem', color: '#FFDE28', marginLeft: '1rem', width: '100%'}}>A free, peer-run service for UC Davis Students.</Typography>
+              <Typography width='100%' fontFamily='Sumana' fontSize={{ xs: '1.5rem', sm: '1.75rem', md: '2rem'}} marginLeft={{md: '0.3rem'}}>CS Tutoring at UC Davis</Typography>
+              <Typography marginLeft={{md: '0.5rem'}} width='100%' textAlign={{xs: 'center', sm: 'center', md: 'left'}}fontSize={{xs: '0.85rem'}} sx={{color: 'text.secondary' }}>A free, peer-run service for UC Davis Students.</Typography>
             </Box>
           </Box>
 
-          <Typography sx={{ fontSize: '1rem', marginTop: '5rem', marginBottom: '0.5rem', color: '#F7F7F7', fontFamily: 'Sumana' }} > Reach out to us at 
-            <Link href="mailto:cstutoring@ucdavis.edu" target="_blank" style={{ textDecoration: 'none', fontWeight: 'bold' }}
-            >
-            <span style={{ color: '#FFDE28' }}>{' '}cstutoring@ucdavis.edu{' '}</span> 
+          <Typography fontSize={{xs: '0.7rem', sm: '0.8rem', md: '1rem'}} marginTop={{xs: '2rem', sm: '3rem', md: '5rem'}} marginBottom={{xs: '1rem', sm: '0.75rem', md: '0.5rem'}} fontFamily='Sumana' textAlign={{ xs: 'center', sm: 'center', md: 'left' }}> Reach out to us at 
+            <Link href="mailto:cstutoring@ucdavis.edu" target="_blank" style={{ textDecoration: 'none', fontWeight: 'bold' }} > 
+              <span style={{ color: '#FFDE28' }}>{' '}cstutoring@ucdavis.edu{' '}</span> 
             </Link>
-            or any of our socials!</Typography>
-          <Box sx={{ display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'left', gap: '1rem', color: '#FFDE28' }}>
+            {isMd && <br />}or any of our socials!</Typography>
+          <Box display='flex' flexDirection={{ xs: 'column', sm: 'column', md: 'row' }} alignItems='center' justifyContent='left' gap='1rem'  sx={{ color: 'text.secondary' }}>
             <Link href="https://discord.com/invite/HXfwHbYF7f" target="_blank">
-              <Button variant='outlined' sx={{ paddingY: '0.5rem', gap: 1, alignItems: 'center', fontSize: '1rem', borderColor: '#FFDE28', borderRadius: '8px', backgroundColor: '#242424', borderWidth: '0.1rem', fontFamily: 'Sunflower' }}>
-                <Typography sx={{ fontSize: '1rem', fontFamily: 'Sunflower' }}>Discord</Typography>
+              <Button variant='outlined' sx={buttonStyle}>
+                <Typography fontFamily='Sunflower'>Discord</Typography>
                 <img src="Yellow_discord.svg" alt="logo"/>
               </Button>
             </Link>
 
             <Link href="https://www.instagram.com/cstutoringatucd/" target="_blank">
-              <Button variant='outlined'sx={{ paddingY: '0.5rem', gap: 1, fontSize: '1rem', borderColor: '#FFDE28', borderRadius: '8px', backgroundColor: '#242424', borderWidth: '0.1rem', fontFamily: 'Sunflower' }}>
-                <Typography sx={{ fontSize: '1rem', fontFamily: 'Sunflower' }}>Instagram</Typography>
+              <Button variant='outlined'sx={buttonStyle}>
+                <Typography fontFamily='Sunflower'>Instagram</Typography>
                 <img src="Yellow_Instagram.png" alt="logo"/>
               </Button>
             </Link>
 
             <Link href="https://linktr.ee/cstutoringatucd" target="_blank">
-              <Button variant='outlined'sx={{ paddingY: '0.5rem', gap: 1, fontSize: '1rem', borderColor: '#FFDE28', borderRadius: '8px', backgroundColor: '#242424', borderWidth: '0.1rem', fontFamily: 'Sunflower'  }}>
-                <Typography sx={{ fontSize: '1rem', fontFamily: 'Sunflower' }}>Linktree</Typography>
+              <Button variant='outlined'sx={buttonStyle}>
+                <Typography fontFamily='Sunflower'>Linktree</Typography>
                 <img src="Yellow_Linktree.svg" alt="logo"/>
               </Button>
             </Link>
+            {isMd && <>
+              <Box paddingY='1.5rem'></Box>
+              <img src='/Bongo Tiger PC Simplified.svg' alt='logo' width='60%' height='70%' />
+              <Box paddingY='1.5rem'></Box>
+            </>
+            
+            }
           </Box>
         </Box>
 
-        <Box sx={{ display: 'flex', marginTop: '7rem', flexDirection: 'column', gap: 10, alignItems: 'end' }}>
-          <Box sx={{ display: 'flex', flexDirection: 'row', gap: 5 }}>
+        <Box display='flex' marginTop='7rem' flexDirection='column' gap={10} alignItems='end'>
+          { !isMd &&
+          <Box display='flex' flexDirection='row' gap={5}>
             <Link href='/' style={{ textDecoration: 'none', color: '#F7F7F7' }}>
               <Typography sx={{ fontFamily: 'Sumana', fontSize: '1.25rem' }}>Home</Typography>
             </Link>
-            <Typography sx={{ fontFamily: 'Sumana', fontSize: '1.25rem' }}>About Us</Typography>
-            <Typography sx={{ fontFamily: 'Sumana', fontSize: '1.25rem' }}>Tutoring Hours</Typography>
+            {/* <Typography sx={{ fontFamily: 'Sumana', fontSize: '1.25rem' }}>About Us</Typography> */}
+            <Link href='/TutoringHours' style={{ textDecoration: 'none', color: '#F7F7F7'}}>
+              <Typography sx={{ fontFamily: 'Sumana', fontSize: '1.25rem' }}>Tutoring Hours</Typography>
+            </Link>
               {!session ? (
                   <Typography 
                     onClick={() => signIn('discord')} 
-                    sx={{ 
-                    background: 'linear-gradient(90deg, #978000 0%, #FFDE28 17%, #FFFFEC 43%, #FFDE28 81%, #978000 100%)',
-                    WebkitBackgroundClip: 'text',
-                    MozBackgroundClip: 'text',
-                    backgroundClip: 'text',
-                    WebkitTextFillColor: 'transparent',
-                    MozTextFillColor: 'transparent',
-                    color: 'transparent', 
-                    fontFamily: 'Sumana', 
-                    fontSize: '1.25rem'
-                  }}>Log in</Typography>
+                    sx={gradientTextStyle}>Log in</Typography>
               ) : (
                 <>
                 </>
               )}
 
-          </Box>
-          <img src="/Bongo Tiger PC Simplified.svg" alt="logo" width='60%' height='60%' />
+          </Box> 
+          }
+          {!isMd &&<img src="/Bongo Tiger PC Simplified.svg" alt="logo" width='60%' height='60%' />}
         </Box>
 
       </Box>

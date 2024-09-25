@@ -1,8 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { Box } from '@mui/material';
+import { Box, useMediaQuery, Theme, useTheme } from '@mui/material';
 
 const BongoCat = () => {
   const [scale, setScale] = useState(1);
+
+  const theme = useTheme();
+  const isXs = useMediaQuery(theme.breakpoints.down('xs'));
+  const isSm = useMediaQuery(theme.breakpoints.up('sm'));
+  const isMd = useMediaQuery(theme.breakpoints.down('md'));
 
   useEffect(() => {
     const checkScreenSize = () => {
@@ -11,6 +16,7 @@ const BongoCat = () => {
       const newScale = Math.max(0.5, Math.min(1, currentWidth / baseWidth));
       setScale(newScale);
     };
+
 
     // Check on mount
     checkScreenSize();
@@ -25,10 +31,10 @@ const BongoCat = () => {
   return (
     <Box
       sx={{
-        marginTop: '1.5rem',
-        marginLeft: '1.5rem',
-        transform: `scale(${scale})`,
-        transformOrigin: 'top right',
+        marginTop: {md: '1.5rem'},
+        marginLeft: {md: '1.5rem'},
+        transform: {md: `scale(${scale})`},
+        transformOrigin: {xs: 'center', sm: 'center', md: 'top-right'},
         transition: 'transform 0.3s ease',
         display: 'flex',
         flexDirection: 'column',
@@ -36,7 +42,8 @@ const BongoCat = () => {
       }}
     >
       <Box sx={{ display: 'flex', justifyContent: 'flex-start' }}>
-        <img src="Howdy Bubble.svg" alt="Howdy Bubble" style={{ maxWidth: '100%', height: 'auto' }} />
+        {!isMd && <img src="/Howdy Bubble.svg" width='85%' alt="Howdy Bubble" style={{ maxWidth: '100%', height: 'auto' }} />}
+        {isMd && <img src="/Howdy Bubble.svg" width='70%' alt="Howdy Bubble" style={{ maxWidth: '100%', height: 'auto' }} />}
       </Box>
       <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
         <img src="/Bongo Tiger PC Simplified(1).svg" width="85%" alt="logo" style={{ maxWidth: '100%', height: 'auto' }} />
