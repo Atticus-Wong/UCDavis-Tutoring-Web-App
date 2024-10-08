@@ -102,7 +102,7 @@ export default function SeeRequirements() {
         </AccordionSummary>
         <AccordionDetails 
         sx={{ backgroundColor: '#191918' }}>
-          <Typography>We encourage you to volunteer as a CS tutor if you are not in junior standing yet or do not need upper division units. It's a great way for you
+          <Typography>We encourage you to volunteer as a CS tutor if you are not in junior standing yet or do not need upper division units. It&apos;s a great way for you
             to better understand a topic by teaching it to others!</Typography>
           <Typography marginTop='2rem'>As a volunteer tutor, you do not have a minimum hour requirement. We only ask you to maintain a consistent tutoring schedule 
             so students who prefer your tutoring is aware of your availability. You are also welcome to host review sessions for mid-term/final exams.

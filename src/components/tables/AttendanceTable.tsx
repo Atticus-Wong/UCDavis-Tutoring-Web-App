@@ -34,7 +34,7 @@ export default function AttendanceTable({ entries }: AttendanceTableProps) {
   // Ensure state is updated when entries prop changes
   useEffect(() => {
     setSetDataEntries(entries);
-  }, [entries]);
+  }, [setSetDataEntries, entries]);
 
   const columns: ColumnDef<Attendance>[] = useMemo(() => [
     {
@@ -126,7 +126,7 @@ export default function AttendanceTable({ entries }: AttendanceTableProps) {
         );
       }
     }
-  ], [setDataEntries]);
+  ], [setSetDataEntries, setDataEntries]);
 
   const table = useReactTable({
     columns,

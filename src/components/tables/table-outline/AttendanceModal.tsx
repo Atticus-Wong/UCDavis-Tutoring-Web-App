@@ -11,6 +11,9 @@ import { dayAndTimeToUnixMs } from '@/src/utils/utils';
 import Overlay from '../../Overlay';
 import { SetStateAction } from 'jotai';
 
+/* TODO: helper dropdown menu with all staff in guild
+ * reference to fix: https://mui.com/material-ui/react-autocomplete/
+*/
 type AttendanceFormModalProps = {
   entries: Attendance[]
   entry: Attendance
@@ -53,7 +56,7 @@ function FloatingForm({ onClose, data, entry, setData }: FloatingFormProps) {
       helpStartUnixMs: dayAndTimeToUnixMs(helpStart),
       helpEndUnixMs: dayAndTimeToUnixMs(helpEnd),
       helpedMembers: helpedMembers.split(', ').map(name => ({ displayName: name, id: '0' })),
-      helper: { displayName: helper, id: entry.helper.id }
+      helper: { displayName: helper, id:  '0' /*entry.helper.id*/ }
     };
 
     const updatedEntries = [...data];
@@ -175,7 +178,7 @@ function AttendanceModal({ entries, entry, setData }: AttendanceFormModalProps) 
       </Button>
       {isFormOpen && (
         <>
-          <Overlay isVisible={isFormOpen} onClose={handleCloseForm} zIndex={1200}/>
+          <Overlay isVisible={isFormOpen} onClose={handleCloseForm} zIndex={600}/>
           <FloatingForm onClose={handleCloseForm} data={entries} entry={entry} setData={setData} />
         </>
       )}

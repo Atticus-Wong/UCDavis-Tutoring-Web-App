@@ -5,9 +5,7 @@ import Link from "next/link";
 import BongoCat from "../components/BongoCat";
 import TutoringCards from "../components/TutoringCards";
 import gradientButtonStyles from "../components/GradientButtonStyle";
-import Overlay from "../components/Overlay";
-import { useState } from "react";
-import { text } from "stream/consumers";
+import Image from "next/image";
 /*
  * note to future self/developers:
  * TODO: fix css inline styles 
@@ -36,26 +34,26 @@ export default function HomePage() {
           <Typography fontFamily='Sumana' fontSize={{xs: '2rem', sm: '2.25rem', md: '2.5rem'}}>CS Tutoring at{onlyXs && <br />} UC Davis</Typography>
           <Typography sx={{ color: 'text.secondary', }} fontSize={{xs: '1rem'}}> A free, peer-run service for {onlyXs && <br />} UC Davis Students.</Typography>
           <Typography marginTop={{xs: '3rem', sm: '4rem', md: '6rem'}} textAlign={{xs: 'left', sm: 'center', md: 'left'}} fontSize={{xs: '0.85rem', sm: '0.85rem', md: '1rem'}}>Anyone can get tutoring anytime!</Typography>
-          <Typography marginBottom={{xs: '1rem', sm: '0.5rem'}} textAlign={{xs: 'left', sm: 'center', md: 'left'}} fontSize={{xs: '0.85rem', sm: '0.85rem', md: '1rem'}}>Look forward to our Fall 25' tutor recruitment!</Typography>
+          <Typography marginBottom={{xs: '1rem', sm: '0.5rem'}} textAlign={{xs: 'left', sm: 'center', md: 'left'}} fontSize={{xs: '0.85rem', sm: '0.85rem', md: '1rem'}}>Look forward to our Fall 25&apos; tutor recruitment!</Typography>
           {(isSm || isMd) && <BongoCat />}
           <Typography marginTop={{xs: '1rem', sm: '1.5rem', md: '2.5rem'}} textAlign={{xs: 'center', sm: 'center', md: 'left'}} fontSize={{xs: '0.7rem', sm: '0.85rem'}} marginBottom='0.5rem'>Find Us Here</Typography>
           <Box  sx={{ display: 'flex', flexDirection: {xs: 'column', sm: 'column', md: 'row'}, alignItems: 'center', justifyContent: 'left', gap: '1rem', color: '#FFDE28' }}>
             <Link href="https://discord.com/invite/HXfwHbYF7f" target="_blank">
               <Button variant='outlined' sx={{ paddingY: '0.5rem', gap: 1, alignItems: 'center', borderColor: '#FFDE28', borderRadius: '8px', backgroundColor: '#242424', borderWidth: '0.1rem', fontFamily: 'Sunflower' }}>
                 <Typography sx={{ fontSize: '1rem', fontFamily: 'Sunflower' }}>Discord</Typography>
-                <img src="Yellow_discord.svg" alt="logo"/>
+                <Image src="Yellow_discord.svg" alt="logo" width={30} height={20}/>
               </Button>
             </Link>
             <Link href="https://www.instagram.com/cstutoringatucd/" target="_blank">
               <Button variant='outlined'sx={{ paddingY: '0.5rem', gap: 1, borderColor: '#FFDE28', borderRadius: '8px', backgroundColor: '#242424', borderWidth: '0.1rem', fontFamily: 'Sunflower' }}>
                 <Typography fontFamily='Sunflower'>Instagram</Typography>
-                <img src="Yellow_Instagram.png" alt="logo"/>
+                <Image src="Yellow_Instagram.svg" alt="logo" width={20} height={20}/>
               </Button>
             </Link>
             <Link href="https://linktr.ee/cstutoringatucd" target="_blank">
               <Button variant='outlined'sx={{ paddingY: '0.5rem', gap: 1, fontSize: '1rem', borderColor: '#FFDE28', borderRadius: '8px', backgroundColor: '#242424', borderWidth: '0.1rem', fontFamily: 'Sunflower'  }}>
                 <Typography fontFamily='Sunflower'>Linktree</Typography>
-                <img src="Yellow_Linktree.svg" alt="logo"/>
+                <Image src="Yellow_Linktree.svg" alt="logo" width={20} height={20}/>
               </Button>
             </Link>
 
@@ -77,7 +75,7 @@ export default function HomePage() {
       backgroundColor: "#242424",
       }}>
         <Box paddingTop='2rem' paddingX={{xs: '1.5rem', sm: '2rem', md: '3.5rem'}} height='100%'>
-            <Typography sx={{color: 'text.secondary', fontFamily: 'Inter', fontSize: {xs: '1rem', sm: '1.2rem', md: '1.4rem'}}}>Become a tutor for Fall 25'!</Typography>
+            <Typography sx={{color: 'text.secondary', fontFamily: 'Inter', fontSize: {xs: '1rem', sm: '1.2rem', md: '1.4rem'}}}>Become a tutor for Fall 25&apos;!</Typography>
             <Typography marginTop='1rem' marginBottom='2rem' fontSize={{xs: '0.85rem', sm: '1rem' }}>Looking to support your peers in Computer Science while enhancing your interpersonal
                                                              and mentorship skills? {isXs ? <><br /><br /></> : ' '}Join our team as a CS Tutor! Moreover, you can earn academic credit
                                                              for your tutoring hours.
@@ -101,12 +99,6 @@ export default function HomePage() {
               <Link href="https://forms.gle/xxwsm6TJSZ7zgntx9" target="_blank" style={{ textDecoration: 'none', color: 'white', fontWeight: 'bold' }} >
               <Button sx={gradientButtonStyles}>APPLY AS TUTOR</Button>
               </Link>
-
-            {/* <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1, zIndex: 2, position: 'absolute', right: 723, top: -10 }}>
-              <img src="star-big.svg" />
-              <img src="star-small.svg" height={15}/>
-            </Box> */}
-
             </Box>
         </Box>
     </Box>
@@ -120,11 +112,11 @@ export default function HomePage() {
                     We select our tutors carefully so we can give you the best tutoring experience!</Typography>
         <Typography sx={{ fontSize: {xs: '0.85rem', sm: '0.85rem', md: '1rem'}, marginTop: '1rem', }}>We offer our upper and lower division tutoring services throughout the school year. And you can choose to meet up with your tutor in person or online.</Typography>
     </Box>
-    <Box marginTop='15vh' display='flex' flexDirection='row' gap={5} justifyContent='center' flexWrap='wrap'>
-        <img src="/Stats(handshake).svg" alt="affiliation logo" style={{ width: imageSize, height: 'auto' }}/>
-        <img src="/Stats(1.7k).svg" alt="community logo" style={{ width: imageSize, height: 'auto' }}/>
-        <img src="/Stats(stairs).svg" alt="upper/lower division logo" style={{ width: imageSize, height: 'auto' }}/>
-        <img src="/Stats(120hours).svg" alt="120 hours" style={{ width: imageSize, height: 'auto' }}/>
+    <Box marginTop='15vh' display='flex' flexDirection='row' gap={5} alignItems='center' justifyContent='center' flexWrap='wrap'>
+        <Image src="/Stats(handshake).svg" alt="affiliation logo" width={250} height={250}/>
+        <Image src="/Stats(1.7k).svg" alt="community logo" width={250} height={250}/>
+        <Image src="/Stats(stairs).svg" alt="upper/lower division logo" width={250} height={250}/>
+        <Image src="/Stats(120hours).svg" alt="120 hours" width={250} height={250}/>
 
 
     <Box width='100%' marginX='10vh' marginTop='15vh' >

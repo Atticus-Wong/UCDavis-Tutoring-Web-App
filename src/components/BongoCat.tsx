@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Box, useMediaQuery, Theme, useTheme } from '@mui/material';
-
+import Image from 'next/image';
 const BongoCat = () => {
   const [scale, setScale] = useState(1);
 
@@ -18,7 +18,6 @@ const BongoCat = () => {
     };
 
 
-    // Check on mount
     checkScreenSize();
 
     // Add event listener
@@ -42,11 +41,11 @@ const BongoCat = () => {
       }}
     >
       <Box sx={{ display: 'flex', justifyContent: 'flex-start' }}>
-        {!isMd && <img src="/Howdy Bubble.svg" width='85%' alt="Howdy Bubble" style={{ maxWidth: '100%', height: 'auto' }} />}
-        {isMd && <img src="/Howdy Bubble.svg" width='70%' alt="Howdy Bubble" style={{ maxWidth: '100%', height: 'auto' }} />}
+        {!isMd && <Image src="/Howdy Bubble.svg" width={200} height={1} alt="Howdy Bubble" style={{ maxWidth: '100%', height: 'auto' }} />}
+        {isMd && <Image src="/Howdy Bubble.svg" width={200} height={1} alt="Howdy Bubble" style={{ maxWidth: '100%', height: 'auto' }} />}
       </Box>
       <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
-        <img src="/Bongo Tiger PC Simplified(1).svg" width="85%" alt="logo" style={{ maxWidth: '100%', height: 'auto' }} />
+        <Image src="/Bongo Tiger PC Simplified(1).svg" width={500} height={1} alt="logo" style={{ maxWidth: '100%', height: 'auto' }} />
       </Box>
     </Box>
   );

@@ -17,6 +17,7 @@ import { useRouter } from 'next/router';
 import Link from 'next/link';
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore"
 import HamburgerMenu from './HamburgerMenu';
+import Image from 'next/image';
 
 export default function Navbar() {
   const { data: session } = useSession();
@@ -25,7 +26,6 @@ export default function Navbar() {
   const open = Boolean(anchorEl);
   const buttonRef = useRef<HTMLButtonElement | null>(null);
   const theme = useTheme();
-  const isMd = useMediaQuery(theme.breakpoints.up('md'));
   const isSm = useMediaQuery(theme.breakpoints.down('sm'));
 
 
@@ -87,7 +87,7 @@ export default function Navbar() {
         >
           {isSm && <Box></Box>}
           <Box sx={{ display: 'flex', gap: '1rem', alignItems: 'center'  }}>
-            <img src='/Subtract-11.svg' alt='logo'/>
+            <Image src='/Subtract-11.svg' alt='logo' width={35} height={50}/>
             {!isSm && <Typography sx={{ fontFamily: 'Sumana', fontSize: {sm: '1rem', md: '1.5rem'} }}>CS Tutoring Club at UC Davis</Typography>}
           </Box>
           { !isSm ? (
@@ -148,7 +148,7 @@ export default function Navbar() {
                     }}
                   >
                     <MenuItem onClick={discordSignIn} sx={{ '&:hover': { backgroundColor: 'transparent', }, }} >
-                      <img src='discord login.svg' alt='logo' />
+                      <Image src='discord login.svg' alt='logo' width={300} height={75}/>
                     </MenuItem>
                   </Menu>
                 </>

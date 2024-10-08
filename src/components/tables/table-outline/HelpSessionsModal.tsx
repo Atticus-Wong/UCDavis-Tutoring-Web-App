@@ -74,6 +74,7 @@ function FloatingForm({ onClose, data, entry, setData }: FloatingFormProps) {
     }
   };
 
+  // TODO: edge cases on user mishaps
   const updateActiveTimeMs = async (oldSessionActiveTimeMs: number, updatedEntry: HelpSession) => {
     const attendanceRef = doc(attendanceCol, `/${selectedServer?.id}`);
     const attendanceSnap = await getDoc(attendanceRef);
@@ -237,7 +238,7 @@ function HelpSessionModal({ entries, entry, setData }: HelpSessionFormModalProps
       </Button>
       {isFormOpen && (
         <>
-          <Overlay isVisible={isFormOpen} onClose={handleCloseForm} zIndex={1200}/>
+          <Overlay isVisible={isFormOpen} onClose={handleCloseForm} zIndex={600}/>
           <FloatingForm onClose={handleCloseForm} data={entries} entry={entry} setData={setData} />
         </>
       )}

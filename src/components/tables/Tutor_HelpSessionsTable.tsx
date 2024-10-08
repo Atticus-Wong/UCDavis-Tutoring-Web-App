@@ -104,35 +104,24 @@ export default function TutorHelpSessionsTable({ entries }: TutorHelpSessionsTab
         marginBottom={2}
         marginTop={2}
       >
-        Help Sessions
+        Attendance
       </Typography>
       <SessionStats entries={entries} />
-      <div style={{ overflowY: 'scroll', height: '32rem', padding: 4, fontSize: '1.5rem' }}>
+      <div style={{ overflowY: 'scroll', height: '32rem', padding: 4 }}>
         <table
           style={{
             borderCollapse: 'collapse',
             marginLeft: 'auto',
             marginRight: 'auto',
             marginBottom: 8,
-            marginTop: 8,
-            borderRadius: '8px',
-            overflow: 'hidden',
-            width: '100%',
-            boxSizing: 'border-box'
+            marginTop: 8
           }}
         >
-          <thead style={{ position: 'sticky', top: 0, backgroundColor: BRAND_COLOR }}>
+          <thead style={{ position: 'sticky', top: 0 }}>
             {table.getHeaderGroups().map(headerGroup => (
               <tr key={headerGroup.id}>
                 {headerGroup.headers.map(header => (
-                  <th
-                    key={header.id}
-                    style={{
-                      fontWeight: 600,
-                      textAlign: 'center',
-                      padding: '16px'
-                    }}
-                  >
+                  <th key={header.id} style={{ fontWeight: 600 }}>
                     {header.isPlaceholder
                       ? null
                       : flexRender(header.column.columnDef.header, header.getContext())}
@@ -144,20 +133,13 @@ export default function TutorHelpSessionsTable({ entries }: TutorHelpSessionsTab
           <tbody>
             {table.getRowModel().rows.map(row => (
               <tr key={row.id}>
-                {row.getVisibleCells().map((cell, index) => (
+                {row.getVisibleCells().map(cell => (
                   <td
                     key={cell.id}
                     style={{
-                      paddingLeft: '16px',
-                      paddingRight: '16px',
-                      paddingTop: '8px',
-                      paddingBottom: '8px',
-                      textAlign: 'center',
-                      fontSize: '1.25rem',
-                      borderRight: index === row.getVisibleCells().length - 1 ? 'none' : '1px solid gray',
-                      wordWrap: 'break-word',
-                      whiteSpace: 'pre-wrap',
-                      maxWidth: '300px'
+                      border: '1px solid white',
+                      padding: 16,
+                      textAlign: 'center'
                     }}
                   >
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}

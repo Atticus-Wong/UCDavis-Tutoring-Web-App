@@ -33,4 +33,6 @@ const TutorFilter: React.FC<TutorFilterProps> = React.memo(({ filter, columnFilt
   );
 });
 
+TutorFilter.displayName = "TutorFilter";
+
 export default TutorFilter;

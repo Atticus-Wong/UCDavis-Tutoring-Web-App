@@ -20,11 +20,13 @@ export default function ServerSelect() {
   const [selectedServer, setSelectedServer] = useSelectedServer();
   const [firebaseServers, setFirebaseServers] = useState<Server[]>([]);
 
-  // Compute filteredServers based on firebaseServers and userGuildIds
+  // option: could be changed to state variable as well
+  // filteredServers: the intersection of servers between userGUildIds & firebaseServers
   const filteredServers = useMemo(() => {
     return firebaseServers.filter(server => userGuildIds.guildIds.includes(server.id));
   }, [firebaseServers, userGuildIds.guildIds]);
 
+  // fetching firebase data
   useEffect(() => {
     const getFirebaseData = async () => {
       try {
@@ -42,6 +44,7 @@ export default function ServerSelect() {
     getFirebaseData();
   }, []);
 
+  // fetch discord user guilds
   useEffect(() => {
     const getUserGuilds = async () => {
       if (!session) return;
@@ -66,7 +69,7 @@ export default function ServerSelect() {
     };
 
     getUserGuilds();
-  }, []);
+  }, [session]);
 
   // Update selectedServer when filteredServers changes
   useEffect(() => {
@@ -83,11 +86,6 @@ export default function ServerSelect() {
       setSelectedServer(newServer);
     }
   };
-
-  useEffect(() => {
-    console.log(filteredServers)
-
-  }, [])
 
   return (
     <Box sx={{ minWidth: 120 }}>

@@ -30,7 +30,7 @@ export default function HelpSessionsTable({ entries }: HelpSessionsTableProps) {
 
   useEffect(() => {
     setDataEntries(entries);
-  }, [entries]);
+  }, [setDataEntries, entries]);
 
   const columns: ColumnDef<HelpSession>[] = useMemo(() => [
     {
@@ -126,7 +126,7 @@ export default function HelpSessionsTable({ entries }: HelpSessionsTableProps) {
         );
       }
     }
-  ], [dataEntries]);
+  ], [setDataEntries, dataEntries]);
 
   const table = useReactTable({
     columns,

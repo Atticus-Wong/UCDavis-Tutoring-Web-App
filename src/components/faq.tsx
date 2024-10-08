@@ -36,7 +36,7 @@ const FAQ = () => {
         <AccordionDetails 
         sx={{ backgroundColor: '#191918' }}>
           <Typography sx={{ fontSize: {xs: '0.85rem', sm: '0.85rem', md: '1rem'}, }}>
-            <strong>No, you don't!</strong> There is no sign up process to receive our tutoring services. 
+            <strong>No, you don&apos;t!</strong> There is no sign up process to receive our tutoring services. 
             You just need to join our Discord server and get verified with your UC Davis email. 
             And, voilà! You can access all of our tutoring services!
           </Typography>
@@ -91,7 +91,7 @@ const FAQ = () => {
         <AccordionDetails 
         sx={{ backgroundColor: '#191918' }}>
           <Typography sx={{ fontSize: {xs: '0.85rem', sm: '0.85rem', md: '1rem'} }}>
-          Tutoring is not offered during the summer, but feel free to join our Discord server and reach out to anyone with the "Tutor" and "DMs Opened" role for help.
+          Tutoring is not offered during the summer, but feel free to join our Discord server and reach out to anyone with the &quot;Tutor&quot; and &quot;DMs Opened&quot; role for help.
           </Typography>
         </AccordionDetails>
       </Accordion>

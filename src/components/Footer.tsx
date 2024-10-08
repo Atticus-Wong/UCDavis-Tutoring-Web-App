@@ -3,6 +3,7 @@ import { BRAND_COLOR } from '../utils/constants';
 import { useSession } from 'next-auth/react';
 import Link from 'next/link';
 import { signIn } from 'next-auth/react';
+import Image from 'next/image';
 
 export default function Footer() {
   const { data: session } = useSession();
@@ -39,7 +40,7 @@ export default function Footer() {
       <Box maxWidth='1550px' display='flex' justifyContent={{xs: 'center', sm: 'center', md: 'space-between'}} alignItems='center' width='100%'>
         <Box height='100%' sx={{ display: {xs: 'flex', sm: 'flex'}, flexDirection: {xs: 'column', sm: 'column'}, alignItems: {xs: 'center', sm: 'center', md: 'start'}, }} justifyContent={{xs: 'center', sm: 'center', md: 'left' }}>
           <Box display='flex' flexDirection={{xs: 'column', sm: 'column', md: 'row'}} alignItems='center' textAlign={{xs: 'center', sm: 'center'}} justifyContent={{xs: 'center', sm: 'center', md: 'left'}}>
-            <img src='/CS Tutoring Logo.png' width='14%' height='14%'/>
+            <Image src='/CS Tutoring Logo.png' width={50} height={50} alt='CS Tutoring Logo'/>
             <Box>
               <Typography width='100%' fontFamily='Sumana' fontSize={{ xs: '1.5rem', sm: '1.75rem', md: '2rem'}} marginLeft={{md: '0.3rem'}}>CS Tutoring at UC Davis</Typography>
               <Typography marginLeft={{md: '0.5rem'}} width='100%' textAlign={{xs: 'center', sm: 'center', md: 'left'}}fontSize={{xs: '0.85rem'}} sx={{color: 'text.secondary' }}>A free, peer-run service for UC Davis Students.</Typography>
@@ -55,26 +56,26 @@ export default function Footer() {
             <Link href="https://discord.com/invite/HXfwHbYF7f" target="_blank">
               <Button variant='outlined' sx={buttonStyle}>
                 <Typography fontFamily='Sunflower'>Discord</Typography>
-                <img src="Yellow_discord.svg" alt="logo"/>
+                <Image src="Yellow_discord.svg" alt="logo" width={30} height={20}/>
               </Button>
             </Link>
 
             <Link href="https://www.instagram.com/cstutoringatucd/" target="_blank">
               <Button variant='outlined'sx={buttonStyle}>
                 <Typography fontFamily='Sunflower'>Instagram</Typography>
-                <img src="Yellow_Instagram.png" alt="logo"/>
+                <Image src="Yellow_Instagram.svg" alt="logo" width={20} height={20}/>
               </Button>
             </Link>
 
             <Link href="https://linktr.ee/cstutoringatucd" target="_blank">
               <Button variant='outlined'sx={buttonStyle}>
                 <Typography fontFamily='Sunflower'>Linktree</Typography>
-                <img src="Yellow_Linktree.svg" alt="logo"/>
+                <Image src="Yellow_Linktree.svg" alt="logo" width={20} height={20}/>
               </Button>
             </Link>
             {isMd && <>
               <Box paddingY='1.5rem'></Box>
-              <img src='/Bongo Tiger PC Simplified.svg' alt='logo' width='60%' height='70%' />
+              <Image src='/Bongo Tiger PC Simplified.svg' alt='logo' width={300} height={300} />
               <Box paddingY='1.5rem'></Box>
             </>
             
@@ -103,7 +104,7 @@ export default function Footer() {
 
           </Box> 
           }
-          {!isMd &&<img src="/Bongo Tiger PC Simplified.svg" alt="logo" width='60%' height='60%' />}
+          {!isMd &&<Image src="/Bongo Tiger PC Simplified.svg" alt="logo" width={400} height={200} />}
         </Box>
 
       </Box>

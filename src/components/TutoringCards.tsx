@@ -4,6 +4,7 @@ import gradientButtonStyles from './GradientButtonStyle';
 import Link from 'next/link';
 import Overlay from './Overlay';
 import SeeAllChannels from './SeeAllChannels';
+import Image from 'next/image';
 
 const TutoringCards = () => {
   const [isFormOpen, setIsFormOpen] = useState<boolean>(false);
@@ -86,7 +87,7 @@ const TutoringCards = () => {
     <Box marginTop='5vh' display='flex' flexDirection={{xs: 'column', sm: 'column', md: 'row'}} alignItems={{xs: 'center', sm: 'center'}} justifyContent='space-between' gap={{xs: 5, sm: 2, md: 2}}>
       <Box sx={boxStyle}>
         <Box display='flex' justifyContent='center' marginTop='1rem'>
-          <img src='Discord(no_whiskers).svg' width='30%'alt='logo' />
+          <Image src='Discord(no_whiskers).svg' width={200} height={60} alt='logo' />
         </Box>
         <Box sx={{...titleStyle, marginTop: '0.6rem' }}>
           <Typography sx={{...numberStyle}}>1.</Typography>
@@ -129,14 +130,14 @@ const TutoringCards = () => {
             },
           }}>
             <Typography sx={{ fontFamily: 'Sunflower', fontSize: '1.25rem', marginRight: '0.5rem' }}>DISCORD</Typography>
-            <img src='discord(white).svg' alt='logo' />
+            <Image src='discord(white).svg' alt='logo' width={30} height={30} />
           </Button>
         </Link>
       </Box>
 
       <Box sx={boxStyle}>
         <Box sx={{ display: 'flex', justifyContent: 'center', paddingY: '0.4rem' }}>
-          <img src='hours.svg' width='27%'alt='logo' />
+          <Image src='hours.svg' width={200} height={70} alt='logo' />
         </Box>
         <Box sx={titleStyle}>
           <Typography sx={numberStyle}>2.</Typography>
@@ -157,15 +158,15 @@ const TutoringCards = () => {
       }}>
         <Box sx={innerBoxStyle}>
           <Box display='flex' justifyContent='center' paddingY='0.8rem'>
-            <img src='queue logo.svg' width='35%'alt='logo' />
+            <Image src='queue logo.svg' width={200} height={60} alt='logo' />
           </Box>
           <Box sx={titleStyle}>
             <Typography sx={numberStyle}>3.</Typography>
             <Typography variant='h2'>Check queue</Typography>
           </Box>
           <Typography marginBottom='1rem' fontSize={{xs: '0.85rem', sm: '0.85rem', md: '1rem'}} textAlign={{xs: 'center', sm: 'center', md: 'left'}}>Make sure that there are no students waiting before you.</Typography>
-          <Typography fontSize={{xs: '0.85rem', sm: '0.85rem', md: '1rem'}} textAlign={{xs: 'center', sm: 'center', md: 'left'}}>Please open the server dropdown and check "Show all Channels" to see queue channels.<span style={{color: '#242424'}}>_</span> 
-            <img src='(i) icon.svg' alt='logo' onClick={openForm}/>
+          <Typography fontSize={{xs: '0.85rem', sm: '0.85rem', md: '1rem'}} textAlign={{xs: 'center', sm: 'center', md: 'left'}}>Please open the server dropdown and check &quot;Show all Channels&quot; to see queue channels.<span style={{color: '#242424'}}>_</span> 
+            <Image src='(i) icon.svg' alt='logo' width={20} height={20} onClick={openForm}/>
           </Typography>
         </Box>
       </Box>

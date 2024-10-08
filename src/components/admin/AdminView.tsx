@@ -44,12 +44,12 @@ export default function AdminView() {
     getFirebaseData();
 
 
-  }, [selectedServer]);
+  }, [setAttendanceEntries, setHelpSessionEntries, selectedServer]);
 
   useEffect(() => {
     setAttendanceEntries(attendanceEntries);
     setHelpSessionEntries(helpSessionEntries);
-  }, [attendanceEntries, helpSessionEntries])
+  }, [setAttendanceEntries, setHelpSessionEntries, attendanceEntries, helpSessionEntries])
 
   return (
     <>
