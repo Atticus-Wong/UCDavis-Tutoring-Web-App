@@ -1,157 +1,235 @@
-import {
-  flexRender,
-  getCoreRowModel,
-  useReactTable,
-  ColumnDef,
-  getFilteredRowModel,
-  FilterFn,
-  ColumnFiltersState,
-} from '@tanstack/react-table';
-import { useMemo, useEffect, useState } from 'react';
-import { millisecondsToMinutesSeconds } from '../../utils/utils';
-import { Typography, TextField } from '@mui/material';
+import * as React from 'react';
+import { DataGrid, 
+         GridActionsCellItem, 
+         GridColDef, 
+         GridEventListener, 
+         GridRowEditStopReasons, 
+         GridRowId, 
+         GridRowModel, 
+         GridRowModes, 
+         GridRowModesModel,
+         GridRowsProp 
+        } 
+from '@mui/x-data-grid'
+import SaveIcon from '@mui/icons-material/Save'
+import EditIcon from '@mui/icons-material/Edit'
+import CancelIcon from '@mui/icons-material/Cancel'
+import Paper from '@mui/material/Paper';
+import { millisecondsToMinutesSeconds } from '@/src/utils/utils';
+import { Typography } from '@mui/material';
 import SessionStats from './SessionStats';
-import AttendanceModal from './table-outline/AttendanceModal';
-import { BRAND_COLOR } from '@/src/utils/constants';
-import { useSetDataEntries } from '@/src/utils/atom';
-import { DateTimePicker } from '@mui/x-date-pickers';
-import { Dayjs } from 'dayjs';
-import Filters from './Filters';
+import { attendanceCol } from '@/src/utils/firebase';
+import { doc, updateDoc } from 'firebase/firestore';
+import { useSelectedServer } from '@/src/utils/atom';
 
-type AttendanceTableProps = {
+
+const paginationModel = { page: 0, pageSize: 5 };
+
+type DataTableProps = {
   entries: Attendance[];
 }
 
-type HelperType = {
-  id: string,
-  displayName: string
+interface AttendanceRow extends Attendance {
+  id: number;
 }
 
-export default function AttendanceTable({ entries }: AttendanceTableProps) {
-  const [setDataEntries, setSetDataEntries] = useSetDataEntries();
-  const [columnFilters, setColumnFilter] = useState<ColumnFiltersState>([]);
+export default function AttendanceTable({ entries }: DataTableProps) {
+  const [selectedServer] = useSelectedServer();
+  const [rows, setRows] = React.useState<AttendanceRow[]>(
+    entries.map((entry, index) => ({
+      ...entry,
+      id: index
+    }))
+  );
+  const [rowModesModel, setRowModesModel] = React.useState<GridRowModesModel>({});
 
-  // Ensure state is updated when entries prop changes
-  useEffect(() => {
-    setSetDataEntries(entries);
-  }, [setSetDataEntries, entries]);
+  React.useEffect(() => {
+    setRows(entries.map((entry, index) => ({
+      ...entry,
+      id: index
+    })));
+  }, [entries]);
 
-  const columns: ColumnDef<Attendance>[] = useMemo(() => [
-    {
-      id: 'sessionTime',
-      header: 'Session Time',
-      accessorFn: (row) => {
+
+  const handleRowEditStop: GridEventListener<'rowEditStop'> = (params, event) => {
+    if (params.reason === GridRowEditStopReasons.rowFocusOut) {
+      event.defaultMuiPrevented = true;
+    }
+  };
+
+  const handleEditClick = (id: GridRowId) => () => {
+    setRowModesModel({ ...rowModesModel, [id]: { mode: GridRowModes.Edit } });
+  };
+
+  const handleSaveClick = (id: GridRowId) => () => {
+    setRowModesModel({ ...rowModesModel, [id]: { mode: GridRowModes.View } });
+  };
+
+  const handleCancelClick = (id: GridRowId) => () => {
+    setRowModesModel({
+      ...rowModesModel,
+      [id]: { mode: GridRowModes.View, ignoreModifications: true }
+    });
+  };
+
+  const processRowUpdate = async (newRow: GridRowModel<AttendanceRow>) => {
+    try {
+      const updatedRow = { ...newRow } as AttendanceRow;
+      setRows(rows.map((row) => 
+        row.id === newRow.id ? updatedRow : row));
+      await updateFirebaseAttendance(newRow);
+      return updatedRow;
+    } catch (error) {
+      console.error('Failed to update row:', error);
+      throw error;
+    }
+  };
+  
+  const updateFirebaseAttendance = async (row: AttendanceRow) => {
+    try {
+      const attendanceRef = doc(attendanceCol, `/${selectedServer?.id}`);
+
+      const updatedEntry: Attendance = {
+        activeTimeMs: row.activeTimeMs,
+        helpStartUnixMs: row.helpStartUnixMs,
+        helpEndUnixMs: row.helpEndUnixMs,
+        helpedMembers: row.helpedMembers,
+        helper: { displayName: row.helper.displayName, id: entries[row.id].helper.id }
+      }
+
+      const updatedEntries = [...entries];
+      updatedEntries[row.id] = updatedEntry;
+      await updateDoc(attendanceRef, { entries: updatedEntries})
+    } catch (error) {
+      console.error('Error updating attendanceCol: ', error);
+      throw new Error('Firebase UpdateDoc Failed');
+    }
+  };
+
+  const handleRowModesModelChange = (newRowModesModel: GridRowModesModel) => {
+    setRowModesModel(newRowModesModel);
+  };
+
+  const columns: GridColDef[] = [
+    { 
+      field: 'sessionTime',
+      headerName: 'Session Time',
+      width: 175,
+      valueGetter: (value, row) => {
         const { minutes, seconds } = millisecondsToMinutesSeconds(
           row.helpEndUnixMs - row.helpStartUnixMs
         );
         return `${minutes} min. ${seconds} sec.`;
-      },
-    },
-    {
-      id: 'helpStartUnixMs',
-      header: 'Help Start Date',
-      accessorFn: (row) => row.helpStartUnixMs,
-      cell: ({ getValue }) => {
-        const date = new Date(getValue<number>());
-        return `${date.toDateString()} - ${date.toLocaleTimeString()}`;
-      },
-      filterFn: (row, columnId, filterValue) => {
-        if (!filterValue) return true;
-        const cellValue = row.getValue<number>(columnId);
-        return cellValue >= filterValue;
       }
     },
-    {
-      id: 'helpEndUnixMs',
-      header: 'Help End Date',
-      accessorFn: (row) => row.helpEndUnixMs,
-      cell: ({ getValue }) => {
-        const date = new Date(getValue<number>());
-        return `${date.toDateString()} - ${date.toLocaleTimeString()}`;
+    { field: 'HelpStartDate', 
+      headerName: 'Help Start Date', 
+      width: 275,
+      type: 'dateTime',
+      editable: true,
+      valueGetter: (value, row) => {
+        const date = new Date(row.helpStartUnixMs);
+        return date
       },
-      filterFn: (row, columnId, filterValue) => {
-        if (!filterValue) return true;
-        const cellValue = row.getValue<number>(columnId);
-        return cellValue <= filterValue;
+      valueSetter: (value, row) => {
+        return {
+          ...row,
+          helpStartUnixMs: value.getTime()
+        }
       }
     },
-    {
-      id: 'activeTimeMs',
-      header: 'Active Time',
-      accessorFn: (row) => row.activeTimeMs,
-      cell: ({ getValue }) => {
-        const { minutes, seconds } = millisecondsToMinutesSeconds(getValue<number>());
-        return `${minutes} min. ${seconds} sec.`;
+    { field: 'HelpEndDate', 
+      headerName: 'Help End Date', 
+      width: 275,
+      type: 'dateTime',
+      editable: true,
+      valueGetter: (value, row) => {
+        const date = new Date(row.helpEndUnixMs);
+        return date
       },
-    },
-    {
-      id: 'helpedMembers',
-      header: 'Helped Members',
-      accessorFn: (row) => row.helpedMembers,
-      cell: ({ getValue }) => {
-        return getValue<{ displayName: string; id: string }[]>()
-          .map(member => member.displayName)
-          .join(', ');
-      },
-      filterFn: 'arrIncludes'
-    },
-    {
-      id: 'helper',
-      header: 'Helper',
-      accessorFn: (row) => row.helper,
-      cell: ({ getValue }) => <p>{getValue<{ displayName: string; id: string }>().displayName}</p>,
-      filterFn: (row, columnId, filterValue: HelperType) => {
-        const cellValue = row.getValue<HelperType>(columnId);
-        return cellValue.displayName.toLowerCase().includes(filterValue.displayName.toLowerCase());
-      },
-
-    },
-    {
-      id: 'actions',
-      header: 'Actions',
-      cell: ({ row }) => {
-        const currentEntry: Attendance = {
-          activeTimeMs: row.original.activeTimeMs,
-          helpEndUnixMs: row.original.helpEndUnixMs,
-          helpStartUnixMs: row.original.helpStartUnixMs,
-          helpedMembers: row.original.helpedMembers,
-          helper: row.original.helper,
-        };
-        return (
-          <AttendanceModal
-            entries={setDataEntries}
-            entry={currentEntry}
-            setData={setSetDataEntries}
-          />
-        );
+      valueSetter: (value, row) => {
+        return {
+          ...row,
+          helpEndUnixMs: value.getTime()
+        }
       }
-    }
-  ], [setSetDataEntries, setDataEntries]);
 
-  const table = useReactTable({
-    columns,
-    data: setDataEntries,
-    getCoreRowModel: getCoreRowModel(),
-    getFilteredRowModel: getFilteredRowModel(),
-    state: {
-      columnFilters: columnFilters
     },
-    onColumnFiltersChange: setColumnFilter
-  });
+    { field: 'ActiveTime', 
+      headerName: 'Active Time', 
+      width: 175, 
+      valueGetter: (value, row) => {
+        const { minutes, seconds } = millisecondsToMinutesSeconds(row.activeTimeMs);
+        return `${minutes} min ${seconds} sec`;
+      }
+    },
+  { field: 'HelpedMembers', 
+    headerName: 'Helped Members', 
+    sortable: false,
+    editable: false,
+    width: 350, 
+    valueGetter: (value, row) => {
+      return row.helpedMembers.map((member: { id: string, displayName: string }) => member.displayName).join(', ');
+    }, 
+  },
+    { field: 'Helper', 
+      headerName: 'Helper', 
+      editable: true,
+      width: 130, 
+      valueGetter: (value, row) => {
+        return row.helper.displayName
+      },
+      valueSetter: (value, row) => {
+        return {
+          ...row,
+          helper: {
+            ...row.helper,
+            displayName: value
+          }
+        }
+      }
+    },
+      {
+        field: 'actions',
+        type: 'actions',
+        headerName: 'Actions',
+        width: 100,
+        cellClassName: 'actions',
+        getActions: ({ id }) => {
+          const isInEditMode = rowModesModel[id]?.mode === GridRowModes.Edit;
 
-  if (!setDataEntries.length) {
-    return (
-      <Typography
-        fontWeight="bold"
-        fontSize="1.5rem"
-        textAlign="center"
-        marginBottom={8}
-        marginTop={8}
-      >
-        No attendance entries.
-      </Typography>
-    );
-  }
+          if (isInEditMode) {
+            return [
+              <GridActionsCellItem
+                icon={<SaveIcon />}
+                label="Save"
+                sx={{
+                  color: 'primary.main',
+                }}
+                onClick={handleSaveClick(id)}
+              />,
+              <GridActionsCellItem
+                icon={<CancelIcon />}
+                label="Cancel"
+                className="textPrimary"
+                onClick={handleCancelClick(id)}
+                color="inherit"
+              />,
+            ];
+          }
+
+          return [
+            <GridActionsCellItem
+              icon={<EditIcon />}
+              label="Edit"
+              className="textPrimary"
+              onClick={handleEditClick(id)}
+              color="inherit"
+            />,
+          ];
+        },
+      }
+  ];
 
   return (
     <>
@@ -164,75 +242,20 @@ export default function AttendanceTable({ entries }: AttendanceTableProps) {
       >
         Attendance
       </Typography>
-      <SessionStats entries={setDataEntries} />
-      <Filters
-        filter1='helpStartUnixMs'
-        filter2='helpEndUnixMs'
-        filter3='helper'
-        columnFilters={columnFilters}
-        setColumnFilters={setColumnFilter}
-      />
-      <div style={{ overflowY: 'scroll', height: '32rem', padding: 4, fontSize: '1.5rem' }}>
-        <table
-          style={{
-            borderCollapse: 'collapse',
-            marginLeft: 'auto',
-            marginRight: 'auto',
-            marginBottom: 8,
-            marginTop: 8,
-            borderRadius: '8px',
-            overflow: 'hidden',
-            width: '100%',
-            boxSizing: 'border-box'
-          }}
-        >
-          <thead style={{ position: 'sticky', top: 0, backgroundColor: BRAND_COLOR }}>
-            {table.getHeaderGroups().map(headerGroup => (
-              <tr key={headerGroup.id}>
-                {headerGroup.headers.map(header => (
-                  <th
-                    key={header.id}
-                    style={{
-                      fontWeight: 600,
-                      textAlign: 'center',
-                      padding: '16px'
-                    }}
-                  >
-                    {header.isPlaceholder
-                      ? null
-                      : flexRender(header.column.columnDef.header, header.getContext())}
-                  </th>
-                ))}
-              </tr>
-            ))}
-          </thead>
-          <tbody>
-            {table.getRowModel().rows.map(row => (
-              <tr key={row.id}>
-                {row.getVisibleCells().map((cell, index) => (
-                  <td
-                    key={cell.id}
-                    style={{
-                      paddingLeft: '16px',
-                      paddingRight: '16px',
-                      paddingTop: '8px',
-                      paddingBottom: '8px',
-                      textAlign: 'center',
-                      fontSize: '1.25rem',
-                      borderRight: index === row.getVisibleCells().length - 1 ? 'none' : '1px solid gray',
-                      wordWrap: 'break-word',
-                      whiteSpace: 'pre-wrap',
-                      maxWidth: '300px'
-                    }}
-                  >
-                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                  </td>
-                ))}
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+      <SessionStats entries={entries} />
+      <Paper  sx={{ height: 400, width: '100%' }}>
+        <DataGrid
+          rows={rows}
+          columns={columns}
+          initialState={{ pagination: { paginationModel } }}
+          pageSizeOptions={[5, 10, 20, 50, 100]}
+          editMode='row'
+          rowModesModel={rowModesModel}
+          onRowModesModelChange={handleRowModesModelChange}
+          onRowEditStop={handleRowEditStop}
+          processRowUpdate={processRowUpdate}
+        />
+      </Paper> 
     </>
-  );
+  )
 }

@@ -1,95 +1,72 @@
-import {
-  createColumnHelper,
-  flexRender,
-  getCoreRowModel,
-  useReactTable
-} from '@tanstack/react-table';
-import { millisecondsToMinutesSeconds } from '../../utils/utils';
+import * as React from 'react';
+import { DataGrid, GridColDef } from '@mui/x-data-grid';
+import Paper from '@mui/material/Paper';
+import { millisecondsToMinutesSeconds } from '@/src/utils/utils';
 import { Typography } from '@mui/material';
 import SessionStats from './SessionStats';
-import { BRAND_COLOR } from '@/src/utils/constants';
-const columnHelper = createColumnHelper<Attendance>();
-
-const columns = [
-  columnHelper.accessor(
-    row => {
+const columns: GridColDef<Attendance>[] = [
+  { 
+    field: 'sessionTime',
+    headerName: 'Session Time',
+    width: 175,
+    valueGetter: (value, row) => {
       const { minutes, seconds } = millisecondsToMinutesSeconds(
         row.helpEndUnixMs - row.helpStartUnixMs
       );
-
-      return `${minutes} min. ${seconds} sec.`;
-    },
-    {
-      id: 'sessionTime',
-      header: 'Session Time'
-    }
-  ),
-  columnHelper.accessor('helpStartUnixMs', {
-    header: () => 'Help Start Date',
-    cell: info => {
-      const date = new Date(info.getValue());
-
-      return `${date.toDateString()} - ${date.toLocaleTimeString()}`;
-    }
-  }),
-  columnHelper.accessor('helpEndUnixMs', {
-    header: () => 'Help End Date',
-    cell: info => {
-      const date = new Date(info.getValue());
-
-      return `${date.toDateString()} - ${date.toLocaleTimeString()}`;
-    }
-  }),
-  columnHelper.accessor('activeTimeMs', {
-    header: () => 'Active Time',
-    cell: info => {
-      const { minutes, seconds } = millisecondsToMinutesSeconds(info.getValue());
-
       return `${minutes} min. ${seconds} sec.`;
     }
-  }),
-  columnHelper.accessor('helpedMembers', {
-    header: () => 'Helped Members',
-    cell: info => {
-      return info
-        .getValue()
-        .map(member => member.displayName)
-        .join(', ');
+  },
+  { field: 'HelpStartDate', 
+    headerName: 'Help Start Date', 
+    type: 'dateTime',
+    width: 275,
+    valueGetter: (value, row) => {
+      const date = new Date(row.helpStartUnixMs);
+      return date
+    }
+  },
+  { field: 'HelpEndDate', 
+    headerName: 'Help End Date', 
+    type: 'dateTime',
+    width: 275,
+    valueGetter: (value, row) => {
+      const date = new Date(row.helpEndUnixMs);
+      return date
     }
 
-  }),
-  columnHelper.accessor('helper', {
-    header: 'Helper',
-    cell: info => <p>{info.getValue().displayName}</p>
-  }),
+  },
+  { field: 'ActiveTime', 
+    headerName: 'Active Time', 
+    width: 175, 
+    valueGetter: (value, row) => {
+      const { minutes, seconds } = millisecondsToMinutesSeconds(row.activeTimeMs);
+      return `${minutes} min ${seconds} sec`;
+    }
+  },
+  { field: 'HelpedMembers', 
+    headerName: 'Helped Members', 
+    sortable: false,
+    width: 350, 
+    valueGetter: (value, row) => {
+      return row.helpedMembers.map(member => member.displayName).join(', ');
+    }
+  },
+  { field: 'Helper', 
+    headerName: 'Helper', 
+    width: 130, 
+    valueGetter: (value, row) => {
+      return row.helper.displayName
+    }
+  },
 ];
 
-type TutorAttendanceTableProps = {
+const paginationModel = { page: 0, pageSize: 5 };
+
+type DataTableProps = {
   entries: Attendance[];
-};
+}
 
-export default function TutorAttendanceTable({ entries }: TutorAttendanceTableProps) {
-  const table = useReactTable({
-    columns,
-    data: entries,
-    getCoreRowModel: getCoreRowModel(),
-
-  });
-
-  if (!entries.length) {
-    return (
-      <Typography
-        fontWeight="bold"
-        fontSize="1.5rem"
-        textAlign="center"
-        marginBottom={8}
-        marginTop={8}
-      >
-        No attendance entries.
-      </Typography>
-    );
-  }
-
+export default function TutorAttendanceTable({ entries }: DataTableProps) {
   return (
     <>
       <Typography
@@ -102,49 +79,15 @@ export default function TutorAttendanceTable({ entries }: TutorAttendanceTablePr
         Attendance
       </Typography>
       <SessionStats entries={entries} />
-      <div style={{ overflowY: 'scroll', height: '32rem', padding: 4 }}>
-        <table
-          style={{
-            borderCollapse: 'collapse',
-            marginLeft: 'auto',
-            marginRight: 'auto',
-            marginBottom: 8,
-            marginTop: 8
-          }}
-        >
-          <thead style={{ position: 'sticky', top: 0 }}>
-            {table.getHeaderGroups().map(headerGroup => (
-              <tr key={headerGroup.id}>
-                {headerGroup.headers.map(header => (
-                  <th key={header.id} style={{ fontWeight: 600 }}>
-                    {header.isPlaceholder
-                      ? null
-                      : flexRender(header.column.columnDef.header, header.getContext())}
-                  </th>
-                ))}
-              </tr>
-            ))}
-          </thead>
-          <tbody>
-            {table.getRowModel().rows.map(row => (
-              <tr key={row.id}>
-                {row.getVisibleCells().map(cell => (
-                  <td
-                    key={cell.id}
-                    style={{
-                      border: '1px solid white',
-                      padding: 16,
-                      textAlign: 'center'
-                    }}
-                  >
-                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                  </td>
-                ))}
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+      <Paper  sx={{ height: 400, width: '100%' }}>
+        <DataGrid
+          rows={entries}
+          columns={columns}
+          initialState={{ pagination: { paginationModel } }}
+          pageSizeOptions={[5, 10, 20, 50, 100]}
+          getRowId={(row) => row.helpStartUnixMs}
+        />
+      </Paper>
     </>
-  );
+  )
 }

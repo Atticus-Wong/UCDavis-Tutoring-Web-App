@@ -1,160 +1,288 @@
-import {
-  flexRender,
-  getCoreRowModel,
-  useReactTable,
-  ColumnDef,
-  ColumnFiltersState,
-  getFilteredRowModel
-} from '@tanstack/react-table';
-import { useState, useMemo, useEffect } from 'react';
-import { millisecondsToMinutesSeconds } from '../../utils/utils';
-import { Typography } from '@mui/material';
+import { useEffect, useState } from 'react';
+import { DataGrid, 
+         GridActionsCellItem, 
+         GridColDef, 
+         GridEventListener, 
+         GridRowEditStopReasons, 
+         GridRowId, 
+         GridRowModel, 
+         GridRowModes, 
+         GridRowModesModel,
+         GridRowsProp 
+        } 
+from '@mui/x-data-grid';
+import SaveIcon from '@mui/icons-material/Save'
+import EditIcon from '@mui/icons-material/Edit'
+import CancelIcon from '@mui/icons-material/Cancel'
+import Paper from '@mui/material/Paper';
+import { millisecondsToMinutesSeconds } from '@/src/utils/utils';
+import { Box, Typography } from '@mui/material';
 import SessionStats from './SessionStats';
-import HelpSessionModal from './table-outline/HelpSessionsModal';
-import { BRAND_COLOR } from '@/src/utils/constants';
-import Filters from './Filters';
-import { useSetHelpSessionEntries } from '@/src/utils/atom';
+import { doc, updateDoc } from 'firebase/firestore';
+import { attendanceCol, helpSessionsCol } from '@/src/utils/firebase';
+import { useSelectedServer } from '@/src/utils/atom';
 
-type HelpSessionsTableProps = {
+const paginationModel = { page: 0, pageSize: 5 };
+
+type DataTableProps = {
   entries: HelpSession[];
-};
-
-type HelperType = {
-  id: string,
-  displayName: string
 }
 
-export default function HelpSessionsTable({ entries }: HelpSessionsTableProps) {
-  const [dataEntries, setDataEntries] = useSetHelpSessionEntries();
-  const [columnFilter, setColumnFilter] = useState<ColumnFiltersState>([]);
+// https://mui.com/x/react-data-grid/editing/
+// mui x-data-grid requires unique id's of type number
+// other option: using waitStart as a unique identifier
+interface HelpSessionRow extends HelpSession {
+  id: number;
+}
+
+export default function HelpSessionTable({ entries }: DataTableProps) {
+  const [selectedServer] = useSelectedServer();
+  const [rows, setRows] = useState<HelpSessionRow[]>(
+    entries.map((entry, index) => ({
+      ...entry,
+      id: index
+    }))
+  );
+  const [rowModesModel, setRowModesModel] = useState<GridRowModesModel>({});
 
   useEffect(() => {
-    setDataEntries(entries);
-  }, [setDataEntries, entries]);
+    setRows(entries.map((entry, index) => ({
+      ...entry,
+      id: index
+    })));
+    console.log(rows);
+  }, [entries]);
 
-  const columns: ColumnDef<HelpSession>[] = useMemo(() => [
-    {
-      id: 'sessionTime',
-      header: 'Session Time',
-      accessorFn: row => {
+  const handleRowEditStop: GridEventListener<'rowEditStop'> = (params, event) => {
+    if (params.reason === GridRowEditStopReasons.rowFocusOut) {
+      event.defaultMuiPrevented = true;
+    }
+  };
+
+  const handleEditClick = (id: GridRowId) => () => {
+    setRowModesModel({ ...rowModesModel, [id]: { mode: GridRowModes.Edit } });
+  };
+
+  const handleSaveClick = (id: GridRowId) => () => {
+    setRowModesModel({ ...rowModesModel, [id]: { mode: GridRowModes.View } });
+  };
+
+  const handleCancelClick = (id: GridRowId) => () => {
+    setRowModesModel({
+      ...rowModesModel,
+      [id]: { mode: GridRowModes.View, ignoreModifications: true }
+    });
+  };
+
+  const processRowUpdate = async (newRow: GridRowModel<HelpSessionRow>) => {
+    try {
+      const updatedRow = { ...newRow } as HelpSessionRow;
+      setRows(rows.map((row) => 
+        row.id === newRow.id ? updatedRow : row));
+      await updateFirebaseHelpSession(newRow);
+      return updatedRow;
+    } catch (error) {
+      console.error('Failed to update row:', error);
+      throw error;
+    }
+  };
+
+  const updateFirebaseHelpSession = async (row: HelpSessionRow) => {
+    const helpSessionRef = doc(helpSessionsCol, `/${selectedServer?.id}`)
+
+    const updatedEntry: HelpSession = {
+      ...entries[row.id],
+      sessionStartUnixMs: row.sessionStartUnixMs,
+      sessionEndUnixMs: row.sessionEndUnixMs,
+      waitStart: row.waitStart,
+      waitTimeMs: row.waitTimeMs,
+      queueName: row.queueName,
+      helper: { displayName: row.helper.displayName, id: entries[row.id].helper.id },
+      student: { displayName: row.student.displayName, id: entries[row.id].student.id }
+    }
+
+    const updatedEntries = [...entries];
+    updatedEntries[row.id] = updatedEntry;
+    try {
+      await updateDoc(helpSessionRef, { entries: updatedEntries });
+    } catch (err) {
+      console.error('Error updating attendanceCol: ', err);
+      throw new Error('Firebase UpdateDoc Failed');
+      
+    }
+  }
+  
+  const handleRowModesModelChange = (newRowModesModel: GridRowModesModel) => {
+    setRowModesModel(newRowModesModel);
+  };
+
+  const columns: GridColDef[] = [
+    { 
+      field: 'sessionTime',
+      headerName: 'Session Time',
+      width: 150,
+      valueGetter: (value, row) => {
         const { minutes, seconds } = millisecondsToMinutesSeconds(
           row.sessionEndUnixMs - row.sessionStartUnixMs
         );
         return `${minutes} min. ${seconds} sec.`;
       },
     },
-    { 
-      id: 'sessionStartUnixMs',
-      header: 'Session Start',
-      accessorKey: 'sessionStartUnixMs',
-      cell: ({ getValue }) => {
-        const date = new Date(getValue<number>());
-        return `${date.toDateString()} - ${date.toLocaleTimeString()}`;
+    { field: 'sessionStart', 
+      headerName: 'Session Start', 
+      type: 'dateTime',
+      editable: true,
+      width: 275,
+      valueGetter: (value, row) => {
+        const date = new Date(row.sessionStartUnixMs);
+        return date
       },
-      filterFn: (row, columnId, filterValue) => {
-        if(!filterValue) return true;
-        const cellValue = row.getValue<number>(columnId);
-        return cellValue >= filterValue;
+      valueSetter: (value, row) => {
+        return {
+          ...row,
+          sessionStartUnixMs: value.getTime()
+        }
       }
     },
-    {
-      id: 'sessionEndUnixMs',
-      header: 'Session End',
-      accessorKey: 'sessionEndUnixMs',
-      cell: ({ getValue }) => {
-        const date = new Date(getValue<number>());
-        return `${date.toDateString()} - ${date.toLocaleTimeString()}`;
+    { field: 'sessionEnd', 
+      headerName: 'Session End', 
+      type: 'dateTime',
+      editable: true,
+      width: 275,
+      valueGetter: (value, row) => {
+        const date = new Date(row.sessionEndUnixMs);
+        return date
       },
-      filterFn: (row, columnId, filterValue) => {
-        if(!filterValue) return true;
-        const cellValue = row.getValue<number>(columnId);
-        return cellValue <= filterValue
+      valueSetter: (value, row) => {
+        return {
+          ...row,
+          sessionEndUnixMs: value.getTime()
+          
+        }
+      }
+    },
+    { field: 'waitTime', 
+      headerName: 'Wait Time', 
+      width: 150, 
+      valueGetter: (value, row) => {
+        const { minutes, seconds } = millisecondsToMinutesSeconds(row.sessionStartUnixMs - row.waitStart);
+        return `${minutes} min ${seconds} sec`;
+      }
+    },
+    { field: 'waitStart', 
+      headerName: 'Wait Start', 
+      type: 'dateTime',
+      sortable: false,
+      editable: true,
+      width: 275, 
+      valueGetter: (value, row) => {
+        const date = new Date(row.waitStart);
+        return date
+      },
+      valueSetter: (value, row) => {
+        return {
+          ...row,
+          waitStart: value.getTime()
+        }
+      }
+      
+    },
+    { field: 'queue', 
+      headerName: 'Queue', 
+      type: 'string',
+      editable: true,
+      width: 100, 
+      valueGetter: (value, row) => {
+        return row.queueName;
+      },
+      valueSetter: (value, row) => {
+        return {
+          ...row,
+          queueName: value
+        }
+      }
+    },
+    { field: 'student', 
+      headerName: 'Student', 
+      type: 'string',
+      editable: true,
+      width: 100, 
+      valueGetter: (value, row) => {
+        return row.student.displayName
+      },
+      valueSetter: (value, row) => {
+        return {
+          ...row,
+          student: {
+            ...row.student,
+            displayName: value
+          }
+        }
+      }
+    },
+    { field: 'helper', 
+      headerName: 'Helper', 
+      type: 'string',
+      editable: true,
+      width: 100, 
+      valueGetter: (value, row) => {
+        return row.helper.displayName
+      },
+      valueSetter: (value, row) => {
+        return {
+          ...row,
+          helper: {
+            ...row.helper,
+            displayName: value
+          }
+        }
       }
     },
     {
-      id: 'waitTime',
-      header: 'Wait Time',
-      accessorFn: row => {
-        const { minutes, seconds } = millisecondsToMinutesSeconds(
-          row.sessionStartUnixMs - row.waitStart
-        );
-        return `${minutes} min. ${seconds} sec.`;
-      }
-    },
-    {
-      id: 'waitStart',
-      header: 'Wait Start',
-      accessorKey: 'waitStart',
-      cell: ({ getValue }) => {
-        const date = new Date(getValue<number>());
-        return `${date.toDateString()} - ${date.toLocaleTimeString()}`;
-      }
-    },
-    {
-      id: 'queueName',
-      header: 'Queue',
-      accessorKey: 'queueName',
-      cell: ({ getValue }) => getValue<string>(),
-      filterFn: 'includesString'
-    },
-    {
-      id: 'helper',
-      header: 'Helper',
-      accessorKey: 'helper',
-      cell: ({ getValue }) => <p>{getValue<{ id: string; displayName: string }>().displayName}</p>,
-      filterFn: (row, columnid, filterValue: HelperType) => {
-        const cellValue = row.getValue<HelperType>(columnid);
-        return cellValue.displayName.toLowerCase().includes(filterValue.displayName.toLowerCase());
-      }
-    },
-    {
-      id: 'student',
-      header: 'Student',
-      accessorKey: 'student',
-      cell: ({ getValue }) => <p>{getValue<{ id: string; displayName: string }>().displayName}</p>
-    },
-    {
-      id: 'actions',
-      header: 'Actions',
-      cell: ({ row }) => {
-        return (
-          <HelpSessionModal
-            entries={dataEntries}
-            entry={row.original}
-            setData={setDataEntries}
-          />
-        );
-      }
-    }
-  ], [setDataEntries, dataEntries]);
+      field: 'actions',
+      type: 'actions',
+      headerName: 'Actions',
+      width: 100,
+      cellClassName: 'actions',
+      getActions: ({ id }) => {
+        const isInEditMode = rowModesModel[id]?.mode === GridRowModes.Edit;
 
-  const table = useReactTable({
-    columns,
-    data: dataEntries,
-    getCoreRowModel: getCoreRowModel(),
-    getFilteredRowModel: getFilteredRowModel(),
-    state: {
-      columnFilters: columnFilter
-    },
-    onColumnFiltersChange: setColumnFilter
-  });
+        if (isInEditMode) {
+          return [
+            <GridActionsCellItem
+              icon={<SaveIcon />}
+              label="Save"
+              sx={{
+                color: 'primary.main',
+              }}
+              onClick={handleSaveClick(id)}
+            />,
+            <GridActionsCellItem
+              icon={<CancelIcon />}
+              label="Cancel"
+              className="textPrimary"
+              onClick={handleCancelClick(id)}
+              color="inherit"
+            />,
+          ];
+        }
 
-  if (!dataEntries.length) {
-    return (
-      <Typography
-        fontWeight="bold"
-        fontSize="1.5rem"
-        textAlign="center"
-        marginBottom={8}
-        marginTop={8}
-      >
-        No help session entries.
-      </Typography>
-    );
-  }
+        return [
+          <GridActionsCellItem
+            icon={<EditIcon />}
+            label="Edit"
+            className="textPrimary"
+            onClick={handleEditClick(id)}
+            color="inherit"
+          />,
+        ];
+      },
+    },
+  ];
 
   return (
     <>
+      <Box marginTop={20}></Box>
       <Typography
         fontWeight="bold"
         fontSize="1.5rem"
@@ -164,76 +292,21 @@ export default function HelpSessionsTable({ entries }: HelpSessionsTableProps) {
       >
         Help Sessions
       </Typography>
-      <SessionStats entries={dataEntries} />
-      <Filters 
-        filter1='sessionStartUnixMs'
-        filter2='sessionEndUnixMs'
-        filter3='helper'
-        filter4='queueName'
-        columnFilters={columnFilter}
-        setColumnFilters={setColumnFilter}
-      />
-      <div style={{ overflowY: 'scroll', height: '32rem', padding: 4, fontSize: '1.5rem' }}>
-        <table
-          style={{
-            borderCollapse: 'collapse',
-            marginLeft: 'auto',
-            marginRight: 'auto',
-            marginBottom: 8,
-            marginTop: 8,
-            borderRadius: '8px',
-            overflow: 'hidden',
-            width: '100%',
-            boxSizing: 'border-box',
-          }}
-        >
-          <thead style={{ position: 'sticky', top: 0, backgroundColor: BRAND_COLOR }}>
-            {table.getHeaderGroups().map(headerGroup => (
-              <tr key={headerGroup.id}>
-                {headerGroup.headers.map(header => (
-                  <th
-                    key={header.id}
-                    style={{
-                      fontWeight: 600,
-                      textAlign: 'center',
-                      padding: '16px',
-                    }}
-                  >
-                    {header.isPlaceholder
-                      ? null
-                      : flexRender(header.column.columnDef.header, header.getContext())}
-                  </th>
-                ))}
-              </tr>
-            ))}
-          </thead>
-          <tbody>
-            {table.getRowModel().rows.map(row => (
-              <tr key={row.id}>
-                {row.getVisibleCells().map((cell, index) => (
-                  <td
-                    key={cell.id}
-                    style={{
-                      paddingLeft: '16px',
-                      paddingRight: '16px',
-                      paddingTop: '8px',
-                      paddingBottom: '8px',
-                      textAlign: 'center',
-                      fontSize: '1.25rem',
-                      borderRight: index === row.getVisibleCells().length - 1 ? 'none' : '1px solid gray',
-                      wordWrap: 'break-word',
-                      whiteSpace: 'pre-wrap',
-                      maxWidth: '300px',
-                    }}
-                  >
-                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                  </td>
-                ))}
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+      <SessionStats entries={entries} />
+      <Paper  sx={{ height: 400, width: '100%' }}>
+        <DataGrid
+          rows={rows}
+          columns={columns}
+          initialState={{ pagination: { paginationModel } }}
+          pageSizeOptions={[5, 10, 20, 50, 100]}
+          editMode='row'
+          rowModesModel={rowModesModel}
+          onRowModesModelChange={handleRowModesModelChange}
+          onRowEditStop={handleRowEditStop}
+          processRowUpdate={processRowUpdate}
+        />
+      </Paper>
+      <Box marginBottom={20}></Box>
     </>
-  );
+  )
 }

@@ -3,7 +3,7 @@ import { BRAND_COLOR } from '../utils/constants';
 
 export const theme = createTheme({
   typography: {
-    fontSize: 24,
+    fontSize: 16,
     h1: {
       fontSize: '2.5rem'
     },

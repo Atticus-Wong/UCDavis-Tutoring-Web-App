@@ -1,14 +1,13 @@
-'use client';
 import { Typography, Box } from '@mui/material';
-import AttendanceTable from '../tables/AttendanceTable';
 import { useEffect, useState } from 'react';
 import { getDocs } from 'firebase/firestore';
 import { attendanceCol, helpSessionsCol } from '@/src/utils/firebase';
-import HelpSessionsTable from '../tables/HelpSessionsTable';
 import { useSelectedServer, useSetHelpSessionEntries } from '@/src/utils/atom';
 import AdminSelect from '../AdminSelect';
 import Dashboard from './Dashboard';
 import { useSetDataEntries } from '@/src/utils/atom';
+import AttendanceTable from '../tables/AttendanceTable';
+import HelpSessionTable from '../tables/HelpSessionsTable';
 
 
 
@@ -62,8 +61,9 @@ export default function AdminView() {
       </Typography>
       {selectedView === 'tables' ? (
         <>
-          <AttendanceTable entries={attendanceEntries}/>
-          <HelpSessionsTable entries={helpSessionEntries} />
+          <AttendanceTable entries={attendanceEntries} />
+          <HelpSessionTable entries={helpSessionEntries} />
+
         </>
       ) : (
         <Box>
