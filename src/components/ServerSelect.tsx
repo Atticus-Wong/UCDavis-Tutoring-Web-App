@@ -6,19 +6,26 @@ import FormControl from '@mui/material/FormControl';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
 import { getDocs } from 'firebase/firestore';
 import { serverBackupsCol } from '../utils/firebase';
-import { useSelectedServer } from '../utils/atom';
+import { useSelectedServer, useTutorIds } from '../utils/atom';
 import axios from 'axios';
 import { useSession } from 'next-auth/react';
-
+import { Snowflake } from 'discord-api-types/globals';
 interface UserGuildIds {
   guildIds: string[];
 }
 
+interface TutorResponse {
+  tutors: {
+    displayName: string,
+    id: Snowflake
+  }[]
+}
 export default function ServerSelect() {
   const { data: session, status } = useSession();
   const [userGuildIds, setUserGuildIds] = useState<UserGuildIds>({ guildIds: [] });
   const [selectedServer, setSelectedServer] = useSelectedServer();
   const [firebaseServers, setFirebaseServers] = useState<Server[]>([]);
+  const [tutorIds, setTutorIds] = useTutorIds();
 
   // option: could be changed to state variable as well
   // filteredServers: the intersection of servers between userGUildIds & firebaseServers
@@ -70,6 +77,30 @@ export default function ServerSelect() {
 
     getUserGuilds();
   }, [session]);
+
+  // fetch all tutors / bot admins 
+  // 
+  useEffect(() => {
+    const getTutors = async () => {
+      if (!session) return;
+
+      try {
+        const response = await axios.get<TutorResponse>('/api/getTutors', {
+          params: {
+            'roleID': selectedServer?.server.staffRoleId,
+            'adminID': selectedServer?.server.botAdminRoleId,
+            'guildID': selectedServer?.id
+          },
+        });
+        const tutors = response.data.tutors;
+        setTutorIds(tutors)
+      } catch (err) {
+        setTutorIds([])
+      }
+    }
+
+    getTutors();
+  }, [selectedServer, session]);
 
   // Update selectedServer when filteredServers changes
   useEffect(() => {

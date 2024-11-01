@@ -16,11 +16,11 @@ import EditIcon from '@mui/icons-material/Edit'
 import CancelIcon from '@mui/icons-material/Cancel'
 import Paper from '@mui/material/Paper';
 import { millisecondsToMinutesSeconds } from '@/src/utils/utils';
-import { Typography } from '@mui/material';
+import { Typography, Snackbar, Alert } from '@mui/material';
 import SessionStats from './SessionStats';
 import { attendanceCol } from '@/src/utils/firebase';
 import { doc, updateDoc } from 'firebase/firestore';
-import { useSelectedServer } from '@/src/utils/atom';
+import { useSelectedServer, useTutorIds } from '@/src/utils/atom';
 
 
 const paginationModel = { page: 0, pageSize: 5 };
@@ -29,12 +29,20 @@ type DataTableProps = {
   entries: Attendance[];
 }
 
+interface ValidationError {
+  message: string,
+  field: string
+}
+// https://mui.com/x/react-data-grid/editing/
+// mui x-data-grid requires unique id's of type number
 interface AttendanceRow extends Attendance {
   id: number;
 }
 
 export default function AttendanceTable({ entries }: DataTableProps) {
+  const [editedEntries, setEditedEntries] = React.useState(entries);
   const [selectedServer] = useSelectedServer();
+  const [tutorIds] = useTutorIds();
   const [rows, setRows] = React.useState<AttendanceRow[]>(
     entries.map((entry, index) => ({
       ...entry,
@@ -42,6 +50,20 @@ export default function AttendanceTable({ entries }: DataTableProps) {
     }))
   );
   const [rowModesModel, setRowModesModel] = React.useState<GridRowModesModel>({});
+  const [error, setError] = React.useState<ValidationError | null>(null);
+
+  const validateRow = (row: GridRowModel<AttendanceRow>): ValidationError | null => {
+    if (!row.helpStartUnixMs) {
+      return { message: 'Help start cannot be empty', field: 'helpStart'}
+    }
+    if (!row.helpEndUnixMs) {
+      return { message: 'Help end cannot be empty', field: 'helpEnd'}
+    }
+    if (row.helpEndUnixMs < row.helpStartUnixMs) {
+      return { message: 'Help end time must come after help start time', field: 'helpEnd'}
+    }
+    return null;
+  }
 
   React.useEffect(() => {
     setRows(entries.map((entry, index) => ({
@@ -72,7 +94,21 @@ export default function AttendanceTable({ entries }: DataTableProps) {
     });
   };
 
+  const handleCloseError = () => {
+    setError(null);
+  };
+
   const processRowUpdate = async (newRow: GridRowModel<AttendanceRow>) => {
+    const isError = validateRow(newRow);
+    console.log(newRow);
+    console.log(isError)
+    if (isError) {
+      setError(isError)
+      throw new Error(isError.message)
+    } else {
+      setError(null)
+    }
+
     try {
       const updatedRow = { ...newRow } as AttendanceRow;
       setRows(rows.map((row) => 
@@ -84,21 +120,31 @@ export default function AttendanceTable({ entries }: DataTableProps) {
       throw error;
     }
   };
-  
+  // NOTE: asynchronous setState causing issues <- reasoning for using 'first' bool
+  const [first, setFirst] = React.useState(true)
+  let updatedEntries = []
   const updateFirebaseAttendance = async (row: AttendanceRow) => {
     try {
       const attendanceRef = doc(attendanceCol, `/${selectedServer?.id}`);
 
       const updatedEntry: Attendance = {
+        ...editedEntries[row.id],
         activeTimeMs: row.activeTimeMs,
         helpStartUnixMs: row.helpStartUnixMs,
         helpEndUnixMs: row.helpEndUnixMs,
         helpedMembers: row.helpedMembers,
-        helper: { displayName: row.helper.displayName, id: entries[row.id].helper.id }
+        helper: { displayName: row.helper.displayName, id: tutorIds.find(member => member.displayName === row.helper.displayName)?.id ?? ''}
       }
-
-      const updatedEntries = [...entries];
+      if (first) {
+        updatedEntries = [...entries]
+        setFirst(false)
+      } else {
+        updatedEntries = [...editedEntries]
+        
+      }
+      console.log('data being passed into firebase', updatedEntries)
       updatedEntries[row.id] = updatedEntry;
+      setEditedEntries(updatedEntries);
       await updateDoc(attendanceRef, { entries: updatedEntries})
     } catch (error) {
       console.error('Error updating attendanceCol: ', error);
@@ -109,6 +155,11 @@ export default function AttendanceTable({ entries }: DataTableProps) {
   const handleRowModesModelChange = (newRowModesModel: GridRowModesModel) => {
     setRowModesModel(newRowModesModel);
   };
+
+  const handleProcessRowUpdateError = React.useCallback((row: GridRowModel<AttendanceRow>) => {
+    const isError = validateRow(row)
+    return isError
+  }, []);
 
   const columns: GridColDef[] = [
     { 
@@ -134,7 +185,7 @@ export default function AttendanceTable({ entries }: DataTableProps) {
       valueSetter: (value, row) => {
         return {
           ...row,
-          helpStartUnixMs: value.getTime()
+          helpStartUnixMs: value ? value.getTime() : null
         }
       }
     },
@@ -150,7 +201,7 @@ export default function AttendanceTable({ entries }: DataTableProps) {
       valueSetter: (value, row) => {
         return {
           ...row,
-          helpEndUnixMs: value.getTime()
+          helpEndUnixMs: value ? value.getTime() : null
         }
       }
 
@@ -174,16 +225,19 @@ export default function AttendanceTable({ entries }: DataTableProps) {
   },
     { field: 'Helper', 
       headerName: 'Helper', 
+      type: 'singleSelect',
+      valueOptions: tutorIds.map(member => member.displayName),
       editable: true,
       width: 130, 
       valueGetter: (value, row) => {
         return row.helper.displayName
       },
       valueSetter: (value, row) => {
+        const id = tutorIds.find(member => member.displayName === value)?.id;
         return {
           ...row,
           helper: {
-            ...row.helper,
+            id: id,
             displayName: value
           }
         }
@@ -254,8 +308,19 @@ export default function AttendanceTable({ entries }: DataTableProps) {
           onRowModesModelChange={handleRowModesModelChange}
           onRowEditStop={handleRowEditStop}
           processRowUpdate={processRowUpdate}
+          onProcessRowUpdateError={handleProcessRowUpdateError}
         />
       </Paper> 
+      <Snackbar
+        open={error !== null}  
+        autoHideDuration={5000}
+        onClose={handleCloseError}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
+      >
+        <Alert onClose={handleCloseError} severity='error' sx={{ width: '100%'}}>
+          {error?.message}
+        </Alert>
+      </Snackbar>
     </>
   )
 }

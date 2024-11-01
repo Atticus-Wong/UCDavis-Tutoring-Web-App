@@ -12,7 +12,7 @@ const TutoringHours = () => {
       justifyContent: 'center',
     }}>
       <Box sx={{ 
-        height: '50vh',
+        height: '75vh',
         width: '100%',
       }}>
         <iframe 

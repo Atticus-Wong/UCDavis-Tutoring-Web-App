@@ -12,3 +12,7 @@ const setHelpSessionEntries = atom<HelpSession[]>([]);
 
 export const useSetHelpSessionEntries = () => useAtom(setHelpSessionEntries);
 
+const tutorIds = atom<{ displayName: string, id: string }[]>([]);
+
+export const useTutorIds = () => useAtom(tutorIds);
+

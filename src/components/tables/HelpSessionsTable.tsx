@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { DataGrid, 
          GridActionsCellItem, 
          GridColDef, 
@@ -16,11 +16,12 @@ import EditIcon from '@mui/icons-material/Edit'
 import CancelIcon from '@mui/icons-material/Cancel'
 import Paper from '@mui/material/Paper';
 import { millisecondsToMinutesSeconds } from '@/src/utils/utils';
-import { Box, Typography } from '@mui/material';
+import { Box, Typography, Snackbar, Alert } from '@mui/material';
 import SessionStats from './SessionStats';
 import { doc, updateDoc } from 'firebase/firestore';
-import { attendanceCol, helpSessionsCol } from '@/src/utils/firebase';
-import { useSelectedServer } from '@/src/utils/atom';
+import { helpSessionsCol } from '@/src/utils/firebase';
+import { useSelectedServer, useTutorIds } from '@/src/utils/atom';
+
 
 const paginationModel = { page: 0, pageSize: 5 };
 
@@ -35,7 +36,14 @@ interface HelpSessionRow extends HelpSession {
   id: number;
 }
 
+interface ValidationError {
+  message: string,
+  field: string
+}
+
 export default function HelpSessionTable({ entries }: DataTableProps) {
+  const [editedEntries, setEditedEntries] = useState<HelpSession[]>(entries);
+  const [tutorIds] = useTutorIds();
   const [selectedServer] = useSelectedServer();
   const [rows, setRows] = useState<HelpSessionRow[]>(
     entries.map((entry, index) => ({
@@ -45,12 +53,33 @@ export default function HelpSessionTable({ entries }: DataTableProps) {
   );
   const [rowModesModel, setRowModesModel] = useState<GridRowModesModel>({});
 
+  const [error, setError] = useState<ValidationError | null>(null);
+
+  const validateRow = (row: GridRowModel<HelpSessionRow>): ValidationError | null => {
+    if (!row.sessionStartUnixMs) {
+      return { message: 'Session start cannot be empty', field: 'sessionStart'};
+    }
+    if (!row.sessionEndUnixMs) {
+      return { message: 'Session end cannot be empty', field: 'sessionEnd'};
+    }
+    if (!row.waitStart) {
+      return { message: 'Wait start cannot be empty', field: 'waitStart'};
+    }
+    if (row.sessionEndUnixMs < row.sessionStartUnixMs) {
+      return { message: 'Session end time must come after session start time', field: 'sessionEnd'}
+    }
+    if (row.waitStart > row.sessionStartUnixMs) {
+      return { message: 'Wait start time must be before session start time', field: 'waitStart'}
+    }
+    return null;
+  }
+
+
   useEffect(() => {
     setRows(entries.map((entry, index) => ({
       ...entry,
       id: index
     })));
-    console.log(rows);
   }, [entries]);
 
   const handleRowEditStop: GridEventListener<'rowEditStop'> = (params, event) => {
@@ -74,7 +103,19 @@ export default function HelpSessionTable({ entries }: DataTableProps) {
     });
   };
 
+  const handleCloseError = () => {
+    setError(null);
+  };
+
   const processRowUpdate = async (newRow: GridRowModel<HelpSessionRow>) => {
+    const isError = validateRow(newRow);
+    if (isError) {
+      setError(isError);
+      throw new Error(isError.message);
+    } else {
+      setError(null);
+    }
+
     try {
       const updatedRow = { ...newRow } as HelpSessionRow;
       setRows(rows.map((row) => 
@@ -86,27 +127,40 @@ export default function HelpSessionTable({ entries }: DataTableProps) {
       throw error;
     }
   };
-
+  const [first, setFirst] = useState(true);
+  let updatedEntries = []
   const updateFirebaseHelpSession = async (row: HelpSessionRow) => {
     const helpSessionRef = doc(helpSessionsCol, `/${selectedServer?.id}`)
-
+    console.log(entries)
+    if (editedEntries.length === 0) {
+      setEditedEntries(entries)
+    }
+    console.log('editedENtries', editedEntries);
     const updatedEntry: HelpSession = {
-      ...entries[row.id],
+      ...editedEntries[row.id],
       sessionStartUnixMs: row.sessionStartUnixMs,
       sessionEndUnixMs: row.sessionEndUnixMs,
       waitStart: row.waitStart,
       waitTimeMs: row.waitTimeMs,
       queueName: row.queueName,
-      helper: { displayName: row.helper.displayName, id: entries[row.id].helper.id },
+      helper: { displayName: row.helper.displayName, id: tutorIds.find(member => member.displayName === row.helper.displayName)?.id ?? '' },
       student: { displayName: row.student.displayName, id: entries[row.id].student.id }
     }
-
-    const updatedEntries = [...entries];
+    let updatedEntries = [];
+    // NOTE: asynchronous setState causing issues <- reasoning for using 'first' bool
+    if (first) {
+      updatedEntries = [...entries];
+      setFirst(false)
+    } else {
+      updatedEntries = [...editedEntries];
+    }
+    console.log(updatedEntries);
     updatedEntries[row.id] = updatedEntry;
+    setEditedEntries(updatedEntries)
     try {
       await updateDoc(helpSessionRef, { entries: updatedEntries });
     } catch (err) {
-      console.error('Error updating attendanceCol: ', err);
+      console.error('Error updating HelpSessionsCol: ', err);
       throw new Error('Firebase UpdateDoc Failed');
       
     }
@@ -115,6 +169,11 @@ export default function HelpSessionTable({ entries }: DataTableProps) {
   const handleRowModesModelChange = (newRowModesModel: GridRowModesModel) => {
     setRowModesModel(newRowModesModel);
   };
+
+  const handleProcessRowUpdateError = useCallback((row: GridRowModel<HelpSessionRow>) => {
+    const isError = validateRow(row)
+    return isError
+  }, []);
 
   const columns: GridColDef[] = [
     { 
@@ -140,7 +199,7 @@ export default function HelpSessionTable({ entries }: DataTableProps) {
       valueSetter: (value, row) => {
         return {
           ...row,
-          sessionStartUnixMs: value.getTime()
+          sessionStartUnixMs: value ? value.getTime() : null
         }
       }
     },
@@ -156,7 +215,7 @@ export default function HelpSessionTable({ entries }: DataTableProps) {
       valueSetter: (value, row) => {
         return {
           ...row,
-          sessionEndUnixMs: value.getTime()
+          sessionEndUnixMs: value ? value.getTime() : null
           
         }
       }
@@ -182,7 +241,7 @@ export default function HelpSessionTable({ entries }: DataTableProps) {
       valueSetter: (value, row) => {
         return {
           ...row,
-          waitStart: value.getTime()
+          waitStart: value ? value.getTime() : null
         }
       }
       
@@ -222,17 +281,19 @@ export default function HelpSessionTable({ entries }: DataTableProps) {
     },
     { field: 'helper', 
       headerName: 'Helper', 
-      type: 'string',
+      type: 'singleSelect',
+      valueOptions: tutorIds.map((member) => member.displayName),
       editable: true,
       width: 100, 
       valueGetter: (value, row) => {
         return row.helper.displayName
       },
       valueSetter: (value, row) => {
+        const id = tutorIds.find(member => member.displayName === value)?.id;
         return {
           ...row,
           helper: {
-            ...row.helper,
+            id: id,
             displayName: value
           }
         }
@@ -304,8 +365,19 @@ export default function HelpSessionTable({ entries }: DataTableProps) {
           onRowModesModelChange={handleRowModesModelChange}
           onRowEditStop={handleRowEditStop}
           processRowUpdate={processRowUpdate}
+          onProcessRowUpdateError={handleProcessRowUpdateError}
         />
       </Paper>
+      <Snackbar
+        open={error !== null}  
+        autoHideDuration={5000}
+        onClose={handleCloseError}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
+      >
+        <Alert onClose={handleCloseError} severity='error' sx={{ width: '100%'}}>
+          {error?.message}
+        </Alert>
+      </Snackbar>
       <Box marginBottom={20}></Box>
     </>
   )
