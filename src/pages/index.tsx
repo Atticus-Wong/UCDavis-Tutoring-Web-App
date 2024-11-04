@@ -6,6 +6,7 @@ import BongoCat from "../components/BongoCat";
 import TutoringCards from "../components/TutoringCards";
 import gradientButtonStyles from "../components/GradientButtonStyle";
 import Image from "next/image";
+import StatsImages from "../components/Statistics";
 /*
  * note to future self/developers:
  * TODO: fix css inline styles 
@@ -113,10 +114,7 @@ export default function HomePage() {
         <Typography sx={{ fontSize: {xs: '0.85rem', sm: '0.85rem', md: '1rem'}, marginTop: '1rem', }}>We offer our upper and lower division tutoring services throughout the school year. And you can choose to meet up with your tutor in person or online.</Typography>
     </Box>
     <Box marginTop='15vh' display='flex' flexDirection='row' gap={5} alignItems='center' justifyContent='center' flexWrap='wrap'>
-        <Image src="/Stats(handshake).svg" alt="affiliation logo" width={250} height={250}/>
-        <Image src="/Stats(1.7k).svg" alt="community logo" width={250} height={250}/>
-        <Image src="/Stats(stairs).svg" alt="upper/lower division logo" width={250} height={250}/>
-        <Image src="/Stats(120hours).svg" alt="120 hours" width={250} height={250}/>
+      <StatsImages />
 
 
     <Box width='100%' marginX='10vh' marginTop='15vh' >

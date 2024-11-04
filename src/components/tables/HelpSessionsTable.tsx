@@ -131,11 +131,9 @@ export default function HelpSessionTable({ entries }: DataTableProps) {
   let updatedEntries = []
   const updateFirebaseHelpSession = async (row: HelpSessionRow) => {
     const helpSessionRef = doc(helpSessionsCol, `/${selectedServer?.id}`)
-    console.log(entries)
     if (editedEntries.length === 0) {
       setEditedEntries(entries)
     }
-    console.log('editedENtries', editedEntries);
     const updatedEntry: HelpSession = {
       ...editedEntries[row.id],
       sessionStartUnixMs: row.sessionStartUnixMs,
@@ -312,6 +310,7 @@ export default function HelpSessionTable({ entries }: DataTableProps) {
           return [
             <GridActionsCellItem
               icon={<SaveIcon />}
+              key='save'
               label="Save"
               sx={{
                 color: 'primary.main',
@@ -320,6 +319,7 @@ export default function HelpSessionTable({ entries }: DataTableProps) {
             />,
             <GridActionsCellItem
               icon={<CancelIcon />}
+              key='cancel'
               label="Cancel"
               className="textPrimary"
               onClick={handleCancelClick(id)}
@@ -331,6 +331,7 @@ export default function HelpSessionTable({ entries }: DataTableProps) {
         return [
           <GridActionsCellItem
             icon={<EditIcon />}
+            key='edit'
             label="Edit"
             className="textPrimary"
             onClick={handleEditClick(id)}

@@ -5,7 +5,6 @@ import { useEffect, useState } from 'react';
 import TutorHelpSessionsTable from '../tables/Tutor_HelpSessionsTable';
 import { useSelectedServer } from '@/src/utils/atom';
 import TutorAttendanceTable from '../tables/Tutor_AttendanceTable';
-import HelpSessionsTable from '../tables/2HelpSessionsTable';
 
 type TutorViewProps = {
   userId: string;

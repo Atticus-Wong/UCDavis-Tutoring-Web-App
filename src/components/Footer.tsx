@@ -73,12 +73,26 @@ export default function Footer() {
                 <Image src="Yellow_Linktree.svg" alt="logo" width={20} height={20}/>
               </Button>
             </Link>
-            {isMd && <>
-              <Box paddingY='1.5rem'></Box>
-              <Image src='/Bongo Tiger PC Simplified.svg' alt='logo' width={300} height={300} />
-              <Box paddingY='1.5rem'></Box>
+            {isMd && 
+            <>
+              <Box
+                  sx={{
+                    position: 'relative',
+                    width: '100%',
+                    maxWidth: { xs: '200px', sm: '250px', md: '250px' },
+                    height: { xs: '200px', sm: '250px', md: '250px' },
+                    mx: 'auto' // Centers the logo horizontally
+                  }}
+                >
+                <Image
+                  src='/Bongo Tiger PC Simplified.svg'
+                  alt='logo'
+                  fill
+                  style={{ objectFit: 'contain' }}
+                  priority
+                />
+              </Box>
             </>
-            
             }
           </Box>
         </Box>

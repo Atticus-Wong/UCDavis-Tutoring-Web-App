@@ -100,7 +100,7 @@ export default function ServerSelect() {
     }
 
     getTutors();
-  }, [selectedServer, session]);
+  }, [selectedServer, session, setTutorIds]);
 
   // Update selectedServer when filteredServers changes
   useEffect(() => {

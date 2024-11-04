@@ -100,8 +100,6 @@ export default function AttendanceTable({ entries }: DataTableProps) {
 
   const processRowUpdate = async (newRow: GridRowModel<AttendanceRow>) => {
     const isError = validateRow(newRow);
-    console.log(newRow);
-    console.log(isError)
     if (isError) {
       setError(isError)
       throw new Error(isError.message)
@@ -142,7 +140,6 @@ export default function AttendanceTable({ entries }: DataTableProps) {
         updatedEntries = [...editedEntries]
         
       }
-      console.log('data being passed into firebase', updatedEntries)
       updatedEntries[row.id] = updatedEntry;
       setEditedEntries(updatedEntries);
       await updateDoc(attendanceRef, { entries: updatedEntries})
@@ -256,6 +253,7 @@ export default function AttendanceTable({ entries }: DataTableProps) {
             return [
               <GridActionsCellItem
                 icon={<SaveIcon />}
+                key='save'
                 label="Save"
                 sx={{
                   color: 'primary.main',
@@ -264,6 +262,7 @@ export default function AttendanceTable({ entries }: DataTableProps) {
               />,
               <GridActionsCellItem
                 icon={<CancelIcon />}
+                key='cancel'
                 label="Cancel"
                 className="textPrimary"
                 onClick={handleCancelClick(id)}
@@ -275,6 +274,7 @@ export default function AttendanceTable({ entries }: DataTableProps) {
           return [
             <GridActionsCellItem
               icon={<EditIcon />}
+              key='edit'
               label="Edit"
               className="textPrimary"
               onClick={handleEditClick(id)}
