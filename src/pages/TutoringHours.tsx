@@ -1,7 +1,7 @@
 import React from 'react';
 import { Box } from "@mui/material";
 
-const TutoringHours = () => {
+const tutoringHours = () => {
   return (
     <Box sx={{ 
       maxWidth: '1328px', 
@@ -29,4 +29,4 @@ const TutoringHours = () => {
   );
 };
 
-export default TutoringHours;
+export default tutoringHours;

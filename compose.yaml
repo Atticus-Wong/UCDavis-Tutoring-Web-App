@@ -1,7 +1,7 @@
 services:
   web:
-    container_name: cs_tutoring
-    image: cs-tutoring:latest
+    container_name: cs-tutoring
+    image: cs-tutoring:v1.0
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:3000"]
       interval: 1m30s

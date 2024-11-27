@@ -9,8 +9,6 @@ export default function SeeRequirements() {
   const [expanded, setExpanded] = useState<string | false>('');
   const theme = useTheme();
   const isMd = useMediaQuery(theme.breakpoints.down('md'))
-  const isSm = useMediaQuery(theme.breakpoints.down('sm'))
-  const isXs = useMediaQuery(theme.breakpoints.down('xs'))
   const handleChange =
   (panel: string) => (event: React.SyntheticEvent, newExpanded: boolean) => {
     setExpanded(newExpanded ? panel : false);

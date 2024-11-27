@@ -42,7 +42,7 @@ export default function Footer() {
           <Box display='flex' flexDirection={{xs: 'column', sm: 'column', md: 'row'}} alignItems='center' textAlign={{xs: 'center', sm: 'center'}} justifyContent={{xs: 'center', sm: 'center', md: 'left'}}>
             <Image src='/CS Tutoring Logo.png' width={50} height={50} alt='CS Tutoring Logo'/>
             <Box>
-              <Typography width='100%' fontFamily='Sumana' fontSize={{ xs: '1.5rem', sm: '1.75rem', md: '2rem'}} marginLeft={{md: '0.3rem'}}>CS Tutoring at UC Davis</Typography>
+              <Typography width='100%' fontFamily='Sumana' variant='h2' marginLeft={{md: '0.3rem'}}>CS Tutoring at UC Davis</Typography>
               <Typography marginLeft={{md: '0.5rem'}} width='100%' textAlign={{xs: 'center', sm: 'center', md: 'left'}}fontSize={{xs: '0.85rem'}} sx={{color: 'text.secondary' }}>A free, peer-run service for UC Davis Students.</Typography>
             </Box>
           </Box>
@@ -87,9 +87,8 @@ export default function Footer() {
                 <Image
                   src='/Bongo Tiger PC Simplified.svg'
                   alt='logo'
-                  fill
-                  style={{ objectFit: 'contain' }}
-                  priority
+                  width={300}
+                  height={200}
                 />
               </Box>
             </>
@@ -97,7 +96,7 @@ export default function Footer() {
           </Box>
         </Box>
 
-        <Box display='flex' marginTop='7rem' flexDirection='column' gap={10} alignItems='end'>
+        <Box display='flex' marginTop='7rem' flexDirection='column' gap={10} alignItems='center'>
           { !isMd &&
           <Box display='flex' flexDirection='row' gap={5}>
             <Link href='/' style={{ textDecoration: 'none', color: '#F7F7F7' }}>
@@ -118,7 +117,7 @@ export default function Footer() {
 
           </Box> 
           }
-          {!isMd &&<Image src="/Bongo Tiger PC Simplified.svg" alt="logo" width={400} height={200} />}
+          {!isMd &&<Image src="/Bongo Tiger PC Simplified.svg" alt="logo" width={300} height={200} />}
         </Box>
 
       </Box>

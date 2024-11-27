@@ -8,13 +8,13 @@ export const theme = createTheme({
       fontSize: '2.5rem'
     },
     h2: {
-      fontSize: '1.5rem',
+      fontSize: '2rem',
     },
     h3: {
-      fontSize: '1.25rem'
+      fontSize: '1.5rem'
     },
     h4: {
-      fontSize: '2rem'
+      fontSize: '1.4rem'
     },
     body1: {
       fontSize: '1rem'
@@ -38,4 +38,50 @@ export const theme = createTheme({
       secondary: '#FFDE28'
     }
   },
+  components: {
+    MuiTypography: {
+      styleOverrides: {
+        h1: {
+          '@media (max-width:960px)': {
+            fontsize: '2.25rem',
+          },
+          '@media (max-width:600px)': {
+            fontSize: '2rem'
+          },
+        },
+        h2: {
+          '@media (max-width:960px)': {
+            fontsize: '1.75rem',
+          },
+          '@media (max-width:600px)': {
+            fontSize: '1.5rem'
+          },
+        },
+        h3: {
+          '@media (max-width:960px)': {
+            fontsize: '1.5rem',
+          },
+          '@media (max-width:600px)': {
+            fontSize: '1.25rem'
+          },
+        },
+        h4: {
+          '@media (max-width:960px)': {
+            fontsize: '1.2rem',
+          },
+          '@media (max-width:600px)': {
+            fontSize: '1rem'
+          },
+        },
+        body1: {
+          '@media (max-width:960px)': {
+            fontsize: '0.85rem',
+          },
+          '@media (max-width:600px)': {
+            fontSize: '0.85rem'
+          },
+        },
+      }
+    }
+  }
 });

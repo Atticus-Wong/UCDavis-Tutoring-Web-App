@@ -88,7 +88,7 @@ export default function Navbar() {
           {isSm && <Box></Box>}
           <Box sx={{ display: 'flex', gap: '1rem', alignItems: 'center'  }}>
             <Image src='/Subtract-11.svg' alt='logo' width={35} height={50}/>
-            {!isSm && <Typography sx={{ fontFamily: 'Sumana', fontSize: {sm: '1rem', md: '1.5rem'} }}>CS Tutoring Club at UC Davis</Typography>}
+            {!isSm && <Typography variant='h3' sx={{ fontFamily: 'Sumana' }}>CS Tutoring Club at UC Davis</Typography>}
           </Box>
           { !isSm ? (
           <Box display="flex" gap="2rem" alignItems="center">
@@ -97,7 +97,7 @@ export default function Navbar() {
                   <Typography sx={{ fontFamily: 'Sumana', fontSize: {sm: '1rem', md: '1.25rem'} }}>Home</Typography>
                 </Link>
                 {/* <Typography sx={{ fontFamily: 'Sumana', fontSize: '1.25rem' }}>About Us</Typography> */}
-                <Link href='/TutoringHours' style={{textDecoration: 'none', color: '#F7F7F7'}}>
+                <Link href='/tutoringHours' style={{textDecoration: 'none', color: '#F7F7F7'}}>
                 
                   <Typography sx={{ fontFamily: 'Sumana', fontSize: {sm: '1rem', md: '1.25rem'} }}>Tutoring Hours</Typography>
                 </Link>

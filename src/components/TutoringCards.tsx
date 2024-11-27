@@ -21,7 +21,6 @@ const TutoringCards = () => {
   const boxStyle = {
     width: {xs: '100%', sm: '100%', md: '30%'},
     minHeight: {xs: '350px', sm: '375px', md: '425px'},
-    minWidth: {xs: '320px' },
     backgroundColor: '#242424',
     borderRadius: '8px',
     padding: '2rem',
@@ -91,7 +90,7 @@ const TutoringCards = () => {
         </Box>
         <Box sx={{...titleStyle, marginTop: '0.6rem' }}>
           <Typography sx={{...numberStyle}}>1.</Typography>
-          <Typography fontSize={{xs: '1.25rem', sm: '1.5rem', md: '1.5rem'}}>Join our discord</Typography>
+          <Typography variant='h3'>Join our discord</Typography>
         </Box>
         <Typography marginBottom='3rem' fontSize={{xs: '0.85rem', sm: '0.85rem', md: '1rem'}} textAlign={{xs: 'center', sm: 'center', md: 'left'}}>After joining our Discord Server, remember to verify your account with your UC Davis student email.</Typography>
         <Link href="https://discord.com/invite/HXfwHbYF7f" target="_blank">
@@ -141,9 +140,9 @@ const TutoringCards = () => {
         </Box>
         <Box sx={titleStyle}>
           <Typography sx={numberStyle}>2.</Typography>
-          <Typography variant='h2'>Check hours</Typography>
+          <Typography variant='h3'>Check hours</Typography>
         </Box>
-        <Typography marginBottom={{xs: '3rem', sm: '4.5rem', md: '4.5rem'}} fontSize={{xs: '0.85rem', sm: '0.85rem', md: '1rem'}} textAlign={{xs: 'center', sm: 'center', md: 'left'}}>Go to Tutoring Hours to see if any tutors are available for tutoring.</Typography>
+        <Typography variant='body1' marginBottom={{xs: '3rem', sm: '4.5rem', md: '4.5rem'}}  textAlign={{xs: 'center', sm: 'center', md: 'left'}}>Go to Tutoring Hours to see if any tutors are available for tutoring.</Typography>
           <Link href='/tutoringHours'>
           <Button variant='outlined' sx={{borderRadius: '8px', border: '2px solid', fontSize: '1.25rem', width: '100%'}}> 
             TUTORING HOURS
@@ -162,10 +161,10 @@ const TutoringCards = () => {
           </Box>
           <Box sx={titleStyle}>
             <Typography sx={numberStyle}>3.</Typography>
-            <Typography variant='h2'>Check queue</Typography>
+            <Typography variant='h3'>Check queue</Typography>
           </Box>
-          <Typography marginBottom='1rem' fontSize={{xs: '0.85rem', sm: '0.85rem', md: '1rem'}} textAlign={{xs: 'center', sm: 'center', md: 'left'}}>Make sure that there are no students waiting before you.</Typography>
-          <Typography fontSize={{xs: '0.85rem', sm: '0.85rem', md: '1rem'}} textAlign={{xs: 'center', sm: 'center', md: 'left'}}>Please open the server dropdown and check &quot;Show all Channels&quot; to see queue channels.<span style={{color: '#242424'}}>_</span> 
+          <Typography marginBottom='1rem' variant='body1' textAlign={{xs: 'center', sm: 'center', md: 'left'}}>Make sure that there are no students waiting before you.</Typography>
+          <Typography variant='body1' textAlign={{xs: 'center', sm: 'center', md: 'left'}}>Please open the server dropdown and check &quot;Show all Channels&quot; to see queue channels.<span style={{color: '#242424'}}>_</span> 
             <Image src='(i) icon.svg' alt='logo' width={20} height={20} onClick={openForm}/>
           </Typography>
         </Box>

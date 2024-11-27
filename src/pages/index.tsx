@@ -32,10 +32,10 @@ export default function HomePage() {
       }}>
       <Box sx={{ display: 'flex', justifyContent: {xs: 'center', sm: 'center', md: 'space-between'}, width: '100%', alignItems: 'center'}}>
         <Box textAlign={{xs: 'left', sm: 'center', md: 'left'}} sx={{ height: '100%' }}>
-          <Typography fontFamily='Sumana' fontSize={{xs: '2rem', sm: '2.25rem', md: '2.5rem'}}>CS Tutoring at{onlyXs && <br />} UC Davis</Typography>
+          <Typography fontFamily='Sumana' variant="h1" marginY={1}>CS Tutoring at{onlyXs && <br />} UC Davis</Typography>
           <Typography sx={{ color: 'text.secondary', }} fontSize={{xs: '1rem'}}> A free, peer-run service for {onlyXs && <br />} UC Davis Students.</Typography>
-          <Typography marginTop={{xs: '3rem', sm: '4rem', md: '6rem'}} textAlign={{xs: 'left', sm: 'center', md: 'left'}} fontSize={{xs: '0.85rem', sm: '0.85rem', md: '1rem'}}>Anyone can get tutoring anytime!</Typography>
-          <Typography marginBottom={{xs: '1rem', sm: '0.5rem'}} textAlign={{xs: 'left', sm: 'center', md: 'left'}} fontSize={{xs: '0.85rem', sm: '0.85rem', md: '1rem'}}>Look forward to our Fall 25&apos; tutor recruitment!</Typography>
+          <Typography variant='body1' marginTop={{xs: '3rem', sm: '4rem', md: '6rem'}} textAlign={{xs: 'left', sm: 'center', md: 'left'}}>Anyone can get tutoring anytime!</Typography>
+          <Typography variant="body1" marginBottom={{xs: '1rem', sm: '0.5rem'}} textAlign={{xs: 'left', sm: 'center', md: 'left'}} >Look forward to our Fall 25&apos; tutor recruitment!</Typography>
           {(isSm || isMd) && <BongoCat />}
           <Typography marginTop={{xs: '1rem', sm: '1.5rem', md: '2.5rem'}} textAlign={{xs: 'center', sm: 'center', md: 'left'}} fontSize={{xs: '0.7rem', sm: '0.85rem'}} marginBottom='0.5rem'>Find Us Here</Typography>
           <Box  sx={{ display: 'flex', flexDirection: {xs: 'column', sm: 'column', md: 'row'}, alignItems: 'center', justifyContent: 'left', gap: '1rem', color: '#FFDE28' }}>
@@ -76,8 +76,8 @@ export default function HomePage() {
       backgroundColor: "#242424",
       }}>
         <Box paddingTop='2rem' paddingX={{xs: '1.5rem', sm: '2rem', md: '3.5rem'}} height='100%'>
-            <Typography sx={{color: 'text.secondary', fontFamily: 'Inter', fontSize: {xs: '1rem', sm: '1.2rem', md: '1.4rem'}}}>Become a tutor for Fall 25&apos;!</Typography>
-            <Typography marginTop='1rem' marginBottom='2rem' fontSize={{xs: '0.85rem', sm: '1rem' }}>Looking to support your peers in Computer Science while enhancing your interpersonal
+            <Typography variant='h4' sx={{color: 'text.secondary', fontFamily: 'Inter',}}>Become a tutor for Fall 25&apos;!</Typography>
+            <Typography marginTop='1rem' marginBottom='2rem' variant='body1'>Looking to support your peers in Computer Science while enhancing your interpersonal
                                                              and mentorship skills? {isXs ? <><br /><br /></> : ' '}Join our team as a CS Tutor! Moreover, you can earn academic credit
                                                              for your tutoring hours.
             </Typography>
@@ -109,9 +109,9 @@ export default function HomePage() {
         marginX: {xs: '7%', sm: '5vh', md: '10vh'},
       }}>
         <Typography sx={{ fontSize: {xs: '1.5rem', sm: '2rem', md: '2.5rem'}, fontFamily: 'Hanuman' }}>Welcome to CS Tutoring!</Typography>
-        <Typography sx={{ fontSize: {xs: '0.8rem', sm: '0.85rem', md: '1rem'}, marginTop: '0.8rem' }}>CS Tutoring organizes undergraduate volunteer tutors to help students with undergraduate CS courses every quarter. 
+        <Typography variant='body1' marginTop="0.8rem">CS Tutoring organizes undergraduate volunteer tutors to help students with undergraduate CS courses every quarter. 
                     We select our tutors carefully so we can give you the best tutoring experience!</Typography>
-        <Typography sx={{ fontSize: {xs: '0.85rem', sm: '0.85rem', md: '1rem'}, marginTop: '1rem', }}>We offer our upper and lower division tutoring services throughout the school year. And you can choose to meet up with your tutor in person or online.</Typography>
+        <Typography variant="body1" marginTop="1rem">We offer our upper and lower division tutoring services throughout the school year. And you can choose to meet up with your tutor in person or online.</Typography>
     </Box>
     <Box marginTop='15vh' display='flex' flexDirection='row' gap={5} alignItems='center' justifyContent='center' flexWrap='wrap'>
       <StatsImages />
