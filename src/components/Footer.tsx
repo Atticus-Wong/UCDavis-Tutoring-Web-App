@@ -75,22 +75,13 @@ export default function Footer() {
             </Link>
             {isMd && 
             <>
-              <Box
-                  sx={{
-                    position: 'relative',
-                    width: '100%',
-                    maxWidth: { xs: '200px', sm: '250px', md: '250px' },
-                    height: { xs: '200px', sm: '250px', md: '250px' },
-                    mx: 'auto' // Centers the logo horizontally
-                  }}
-                >
                 <Image
                   src='/Bongo Tiger PC Simplified.svg'
                   alt='logo'
+                  
                   width={300}
                   height={200}
                 />
-              </Box>
             </>
             }
           </Box>
