@@ -7,3 +7,5 @@ npm-debug.log
 .git
 README.md
 nginx.conf
+*.dev
+*.prod

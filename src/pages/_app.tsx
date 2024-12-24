@@ -6,7 +6,7 @@ import { AppCacheProvider } from '@mui/material-nextjs/v13-pagesRouter';
 import { CssBaseline } from '@mui/material';
 import Layout from './layout';
 import { SessionProvider } from 'next-auth/react';
-import { useFirebaseAuth } from '../utils/firebase';
+import { useFirebaseAuth } from '@/src/utils/firebase';
 
 function FirebaseAuthProvider({ children }: { children: React.ReactNode }) {
   useFirebaseAuth();
