@@ -36,7 +36,7 @@ export default function Footer() {
   }
 
   return (
-    <Box display='flex' paddingX={{sm: '5%', md: '20vh'}} justifyContent='center' alignItems='center' marginTop='10vh' paddingBottom='10vh' paddingTop={{xs: '3rem', sm: '3rem', md: '0rem'}} sx={{ backgroundColor: '#242424' }} >
+    <Box display='flex' paddingX={{sm: '5%', md: '20vh'}} justifyContent='center' alignItems='center' marginTop='10vh' paddingBottom='5vh' paddingTop={{xs: '3rem', sm: '3rem', md: '0rem'}} sx={{ backgroundColor: '#242424' }} >
       <Box maxWidth='1550px' display='flex' justifyContent={{xs: 'center', sm: 'center', md: 'space-between'}} alignItems='center' width='100%'>
         <Box height='100%' sx={{ display: {xs: 'flex', sm: 'flex'}, flexDirection: {xs: 'column', sm: 'column'}, alignItems: {xs: 'center', sm: 'center', md: 'start'}, }} justifyContent={{xs: 'center', sm: 'center', md: 'left' }}>
           <Box display='flex' flexDirection={{xs: 'column', sm: 'column', md: 'row'}} alignItems='center' textAlign={{xs: 'center', sm: 'center'}} justifyContent={{xs: 'center', sm: 'center', md: 'left'}}>

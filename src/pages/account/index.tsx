@@ -1,3 +1,4 @@
+import { GetServerSideProps } from 'next';
 import RoleChip from '@/src/components/RoleChip';
 import ServerSelect from '@/src/components/ServerSelect';
 import UserView from '@/src/components/UserView';
@@ -7,7 +8,7 @@ import { Box, Button, Typography } from '@mui/material';
 import axios from 'axios';
 import { APIGuild, APIGuildMember } from 'discord-api-types/v10';
 import { useSession } from 'next-auth/react';
-import { useEffect, useState } from 'react';
+import { Suspense, useEffect, useState } from 'react';
 
 export default function AccountPage() {
   const { data: session, status } = useSession();
@@ -75,7 +76,10 @@ export default function AccountPage() {
           <UserView roles={discordInfo.roles} userId={discordInfo.user?.id} />
         </>
       ) : (
-        <Typography>You are not in {selectedServer?.server.serverName}.</Typography>
+        <>
+          <Box marginTop={2}></Box>
+          <Typography>You are not in any server.</Typography>
+        </>
       )}
     </Box>
   );

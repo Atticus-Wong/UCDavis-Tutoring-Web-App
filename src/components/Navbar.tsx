@@ -60,7 +60,6 @@ export default function Navbar() {
     signIn('discord');
   }
 
-  // transforming anchor origin to correct location
   useEffect(() => {
     if (buttonRef.current) {
       setAnchorEl(buttonRef.current);
@@ -72,7 +71,7 @@ export default function Navbar() {
   }, []);
 
   return (
-    <AppBar position="sticky" style={{ padding: '1rem', backgroundColor: '#121212', zIndex: '1100' }}>
+    <AppBar position="sticky" style={{ padding: '0.5rem', backgroundColor: '#121212', zIndex: '1100' }}>
       <Toolbar>
         <Box
           sx={{ 

@@ -20,7 +20,7 @@ export default function SeeRequirements() {
 
   return (
     <Box sx={{ maxWidth: '1328px', margin: '0 auto' }}>
-    <Box sx={{ marginX: {xs: '7%', sm: '5vh', md: '10vh'}, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+    <Box display='flex' justifyContent='center' alignItems='center' sx={{ marginX: {xs: '7%', sm: '5vh', md: '10vh'}}}>
       <Box sx={{ 
         width: '100%', 
         marginTop: '3vh',
@@ -35,16 +35,23 @@ export default function SeeRequirements() {
         <Box width='100%' display='flex' flexDirection='row' justifyContent={{xs: 'center', sm: 'center', md: 'space-between'}} alignItems='center'>
           <Typography sx={{ fontSize: {xs: '1.75rem', sm: '2rem', md: '2.25rem'}, color: '#F7F7F7', fontFamily: 'Sumana'}}>Become a CS Tutor</Typography>
           { !isMd &&
+            <Box>
+              <Typography fontFamily='Inter' fontSize={12} marginBottom={1}>Ready to be a tutor?</Typography>
               <Button sx={{ ...gradientButtonStyles, width: 'auto', }} onClick={() => window.open('https://forms.gle/xxwsm6TJSZ7zgntx9', '_blank')} >
-              APPLY AS TUTOR
-            </Button>
+                APPLY AS TUTOR
+              </Button>
+            </Box>
           }
         </Box>
         
   <Box sx={{ display: 'flex', flexDirection: 'row', width: '100%', position: 'relative' }}>
     <Box sx={{ height: '100%' }}> {/* Adjust 200px based on your button's width */}
+      <Typography marginTop='1.5rem' paddingRight={40}>
+        The CS tutoring club has been assisting computer science students in achieving their academic goals since 2014!
+        No matter how large or small the question is, we do our best answering student questions and communicate our understanding in programming.
+        We enjoy being a resource to our peers and reaching out to students who will benefit from our tutoring services.
+      </Typography>
       <Typography marginTop='1.5rem'sx={{fontSize: '1.5rem', color: 'text.secondary', fontFamily: 'Sumana'}}>Tutoring Requirements & Reponsibilities</Typography>
-      <Typography marginTop='1.5rem'>The CS tutoring club has been assisting computer science students in achieving their academic goals since 2014!</Typography>
       <Typography marginTop='1.5rem'>To be a tutor for CS Tutoring, you must fulfill these requirements:</Typography>
       <List sx={{ listStyleType: 'disc', pl: 4, marginTop: '1rem' }}>
         <ListItem sx={listItemStyles}>Must be in good academic standing with a 3.0 GPA or above</ListItem>
@@ -64,6 +71,7 @@ export default function SeeRequirements() {
         marginTop: '5vh',
         display: 'flex',
         flexDirection: 'column',
+        paddingRight: 35
        }}>
       <Accordion sx={{ width: '100%', boxShadow: 'none' }} expanded={expanded === 'panel1'} onChange={handleChange('panel1')}>
         <AccordionSummary 
@@ -88,6 +96,7 @@ export default function SeeRequirements() {
       <Box sx={{ 
         display: 'flex',
         flexDirection: 'column',
+        paddingRight: 35
        }}>
       <Accordion sx={{ width: '100%', boxShadow: 'none', marginTop: '1rem' }} expanded={expanded === 'panel2'} onChange={handleChange('panel2')}>
         <AccordionSummary 
@@ -112,19 +121,22 @@ export default function SeeRequirements() {
       </Accordion>
        </Box>
       { isMd &&
-        <Box display='flex' alignItems='center' justifyContent='center'>
+        <>
+          <Box display='flex' alignItems='center' justifyContent='center'>
 
-          <Button 
-          sx={{
-            ...gradientButtonStyles,
-            marginTop: '1rem',
-            fontSize: '1rem'
-          }}
-          onClick={() => window.open('https://forms.gle/xxwsm6TJSZ7zgntx9', '_blank')}
-        >
-          APPLY AS TUTOR
-        </Button>
-      </Box>}
+            <Button 
+            sx={{
+              ...gradientButtonStyles,
+              marginTop: '1rem',
+              fontSize: '1rem'
+            }}
+            onClick={() => window.open('https://forms.gle/xxwsm6TJSZ7zgntx9', '_blank')}
+          >
+            APPLY AS TUTOR
+          </Button>
+        </Box>
+      </>
+      }
     </Box>
     </Box>
     </Box>

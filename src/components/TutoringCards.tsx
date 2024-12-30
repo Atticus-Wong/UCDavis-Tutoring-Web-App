@@ -92,16 +92,15 @@ const TutoringCards = () => {
           <Typography sx={{...numberStyle}}>1.</Typography>
           <Typography variant='h3'>Join our discord</Typography>
         </Box>
-        <Typography marginBottom='3rem' fontSize={{xs: '0.85rem', sm: '0.85rem', md: '1rem'}} textAlign={{xs: 'center', sm: 'center', md: 'left'}}>After joining our Discord Server, remember to verify your account with your UC Davis student email.</Typography>
+        <Typography marginBottom='4rem' fontSize={{xs: '0.85rem', sm: '0.85rem', md: '1rem'}} textAlign={{xs: 'center', sm: 'center', md: 'left'}}>After joining our Discord Server, remember to verify your account with your UC Davis student email.</Typography>
         <Link href="https://discord.com/invite/HXfwHbYF7f" target="_blank">
           <Button sx={{
             width: '100%',
             background: 'linear-gradient(120deg, rgba(255, 222, 40, 0.75), rgba(255, 222, 40, 0.1))',
             fontFamily: 'Sunflower',
             borderRadius: '12px',
-            paddingX: '3rem',
-            paddingY: '0.55rem',
-            fontSize: '1.25rem',
+            paddingX: '2rem',
+            fontSize: '1rem',
             color: '#F7F7F7',
             textTransform: 'none',
             position: 'relative',
@@ -128,7 +127,7 @@ const TutoringCards = () => {
               },
             },
           }}>
-            <Typography sx={{ fontFamily: 'Sunflower', fontSize: '1.25rem', marginRight: '0.5rem' }}>DISCORD</Typography>
+            <Typography sx={{ fontFamily: 'Sunflower', fontSize: '1rem', marginRight: '0.5rem' }}>DISCORD</Typography>
             <Image src='discord(white).svg' alt='logo' width={30} height={30} />
           </Button>
         </Link>
@@ -142,9 +141,9 @@ const TutoringCards = () => {
           <Typography sx={numberStyle}>2.</Typography>
           <Typography variant='h3'>Check hours</Typography>
         </Box>
-        <Typography variant='body1' marginBottom={{xs: '3rem', sm: '4.5rem', md: '4.5rem'}}  textAlign={{xs: 'center', sm: 'center', md: 'left'}}>Go to Tutoring Hours to see if any tutors are available for tutoring.</Typography>
+        <Typography variant='body1' marginBottom={{xs: '3rem', sm: '4.5rem', md: '5.75rem'}}  textAlign={{xs: 'center', sm: 'center', md: 'left'}}>Go to Tutoring Hours to see if any tutors are available for tutoring.</Typography>
           <Link href='/tutoringHours'>
-          <Button variant='outlined' sx={{borderRadius: '8px', border: '2px solid', fontSize: '1.25rem', width: '100%'}}> 
+          <Button variant='outlined' sx={{borderRadius: '8px', border: '1px solid', fontSize: '1rem', width: '100%', color: "#FFDE28"}}> 
             TUTORING HOURS
           </Button>
         </Link>
@@ -163,8 +162,8 @@ const TutoringCards = () => {
             <Typography sx={numberStyle}>3.</Typography>
             <Typography variant='h3'>Check queue</Typography>
           </Box>
-          <Typography marginBottom='1rem' variant='body1' textAlign={{xs: 'center', sm: 'center', md: 'left'}}>Make sure that there are no students waiting before you.</Typography>
-          <Typography variant='body1' textAlign={{xs: 'center', sm: 'center', md: 'left'}}>Please open the server dropdown and check &quot;Show all Channels&quot; to see queue channels.<span style={{color: '#242424'}}>_</span> 
+          <Typography marginBottom='2rem' variant='body1' textAlign={{xs: 'center', sm: 'center', md: 'left'}}>Check the queue to make sure no students are waiting before you.</Typography>
+          <Typography variant='body1' textAlign={{xs: 'center', sm: 'center', md: 'left'}}>If you do not see queue channels, please open the server dropdown and check &quot;Show all channels.&quot;<span style={{color: '#242424'}}>_</span> 
             <Image src='(i) icon.svg' alt='logo' width={20} height={20} onClick={openForm}/>
           </Typography>
         </Box>

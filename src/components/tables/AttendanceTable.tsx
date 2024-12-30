@@ -1,14 +1,16 @@
 import * as React from 'react';
-import { DataGrid, 
-         GridActionsCellItem, 
-         GridColDef, 
-         GridEventListener, 
-         GridRowEditStopReasons, 
-         GridRowId, 
-         GridRowModel, 
-         GridRowModes, 
-         GridRowModesModel,
-         GridRowsProp 
+import dynamic from 'next/dynamic';
+import { 
+  DataGrid,
+  GridActionsCellItem, 
+  GridColDef, 
+  GridEventListener, 
+  GridRowEditStopReasons, 
+  GridRowId, 
+  GridRowModel, 
+  GridRowModes, 
+  GridRowModesModel,
+  GridRowsProp 
         } 
 from '@mui/x-data-grid'
 import SaveIcon from '@mui/icons-material/Save'
@@ -21,10 +23,7 @@ import SessionStats from './SessionStats';
 import { attendanceCol } from '@/src/utils/firebase';
 import { doc, updateDoc } from 'firebase/firestore';
 import { useSelectedServer, useTutorIds } from '@/src/utils/atom';
-
-
 const paginationModel = { page: 0, pageSize: 5 };
-
 type DataTableProps = {
   entries: Attendance[];
 }
@@ -38,6 +37,19 @@ interface ValidationError {
 interface AttendanceRow extends Attendance {
   id: number;
 }
+
+// Dynamically import DataGrid
+// const DataGrid = dynamic(
+//   () => import('@mui/x-data-grid').then((mod) => mod.DataGrid),
+//   {
+//     loading: () => (
+//       <Box display="flex" justifyContent="center" p={4}>
+//         <CircularProgress />
+//       </Box>
+//     ),
+//     ssr: false // Disable server-side rendering
+//   }
+// );
 
 export default function AttendanceTable({ entries }: DataTableProps) {
   const [editedEntries, setEditedEntries] = React.useState(entries);
@@ -287,40 +299,40 @@ export default function AttendanceTable({ entries }: DataTableProps) {
 
   return (
     <>
-      <Typography
-        fontWeight="bold"
-        fontSize="1.5rem"
-        textAlign="center"
-        marginBottom={2}
-        marginTop={2}
-      >
-        Attendance
-      </Typography>
-      <SessionStats entries={entries} />
-      <Paper  sx={{ height: 400, width: '100%' }}>
-        <DataGrid
-          rows={rows}
-          columns={columns}
-          initialState={{ pagination: { paginationModel } }}
-          pageSizeOptions={[5, 10, 20, 50, 100]}
-          editMode='row'
-          rowModesModel={rowModesModel}
-          onRowModesModelChange={handleRowModesModelChange}
-          onRowEditStop={handleRowEditStop}
-          processRowUpdate={processRowUpdate}
-          onProcessRowUpdateError={handleProcessRowUpdateError}
-        />
-      </Paper> 
-      <Snackbar
-        open={error !== null}  
-        autoHideDuration={5000}
-        onClose={handleCloseError}
-        anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
-      >
-        <Alert onClose={handleCloseError} severity='error' sx={{ width: '100%'}}>
-          {error?.message}
-        </Alert>
-      </Snackbar>
+        <Typography
+          fontWeight="bold"
+          fontSize="1.5rem"
+          textAlign="center"
+          marginBottom={2}
+          marginTop={2}
+        >
+          Attendance
+        </Typography>
+        <SessionStats entries={entries} />
+        <Paper  sx={{ height: 400, width: '100%' }}>
+          <DataGrid
+            rows={rows}
+            columns={columns}
+            initialState={{ pagination: { paginationModel } }}
+            pageSizeOptions={[5, 10, 20, 50, 100]}
+            editMode='row'
+            rowModesModel={rowModesModel}
+            onRowModesModelChange={handleRowModesModelChange}
+            onRowEditStop={handleRowEditStop}
+            processRowUpdate={processRowUpdate}
+            onProcessRowUpdateError={handleProcessRowUpdateError}
+          />
+        </Paper> 
+        <Snackbar
+          open={error !== null}  
+          autoHideDuration={5000}
+          onClose={handleCloseError}
+          anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
+        >
+          <Alert onClose={handleCloseError} severity='error' sx={{ width: '100%'}}>
+            {error?.message}
+          </Alert>
+        </Snackbar>
     </>
   )
 }
