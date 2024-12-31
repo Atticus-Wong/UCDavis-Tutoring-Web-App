@@ -2,7 +2,7 @@
 
 Redesigned by [Atticus Wong.](https://github.com/Atticus-Wong)
 
-### Purpose
+## Purpose
 Serves as the landing and information page for the UCD Tutoring Club
 
 Offers Tutor Management
@@ -10,7 +10,7 @@ Offers Tutor Management
 - Offers an easy-to-use interface for club administrators to perform CRUD (Create, Read, Update, Delete) operations on tutor data.
 - Supports functionalities like tracking tutor availability, maintaining a tutor directory, and updating relevant details dynamically.
 
-### Dependencies
+## Dependencies
 
 This project is an extension of [YABOB.](https://github.com/KaoushikMurugan/yet-another-better-office-hour-bot?tab=readme-ov-file)
 
