@@ -20,5 +20,4 @@ jobs:
         run: docker buildx build \
           --platform linux/amd64,linux/arm64 \
           -t atticuswong174/cs-tutoring:latest \
-          --push \
-          .
+          --push \ .
