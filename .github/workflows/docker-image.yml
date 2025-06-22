@@ -19,7 +19,9 @@ jobs:
       run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
 
     - name: Build the Docker image
-      run: docker build . --file Dockerfile --tag cs-tutoring:$(date +%s)
+      run: docker buildx build \
+        --platform linux/amd64,linux/arm64 \
+        -t ${{ secrets.DOCKER_USERNAME }} /cs-tutoring:latest \
+        --push \
+        .
 
-    - name: Push the Docker image
-      run: docker push cs-tutoring:$(date +%s)
