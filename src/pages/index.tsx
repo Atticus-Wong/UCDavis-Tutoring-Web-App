@@ -35,7 +35,7 @@ export default function HomePage() {
           <Typography fontFamily='Sumana' variant="h1" marginY={1}>CS Tutoring Club at{onlyXs && <br />} UC Davis</Typography>
           <Typography sx={{ color: 'text.secondary', }} fontSize={{xs: '1rem'}}> A free, peer-run service for {onlyXs && <br />} UC Davis Students.</Typography>
           <Typography variant='body1' marginTop={{xs: '3rem', sm: '4rem', md: '6rem'}} textAlign={{xs: 'left', sm: 'center', md: 'left'}}>Anyone can get tutoring anytime!</Typography>
-          <Typography variant="body1" marginBottom={{xs: '1rem', sm: '0.5rem'}} textAlign={{xs: 'left', sm: 'center', md: 'left'}} >Look forward to our Winter 25&apos; tutor recruitment!</Typography>
+          <Typography variant="body1" marginBottom={{xs: '1rem', sm: '0.5rem'}} textAlign={{xs: 'left', sm: 'center', md: 'left'}} >Look forward to our Fall &apos;25 tutor recruitment!</Typography>
           {(isSm || isMd) && <BongoCat />}
           <Typography marginTop={{xs: '1rem', sm: '1.5rem', md: '2.5rem'}} textAlign={{xs: 'center', sm: 'center', md: 'left'}} fontSize={{xs: '0.7rem', sm: '0.85rem'}} marginBottom='0.5rem'>Find Us Here</Typography>
           <Box  sx={{ display: 'flex', flexDirection: {xs: 'column', sm: 'column', md: 'row'}, alignItems: 'center', justifyContent: 'left', gap: '1rem', color: '#FFDE28' }}>
@@ -76,7 +76,7 @@ export default function HomePage() {
       backgroundColor: "#242424",
       }}>
         <Box paddingTop='2rem' paddingX={{xs: '1.5rem', sm: '2rem', md: '3.5rem'}} height='100%'>
-            <Typography variant='h3' fontFamily='Hanuman'sx={{color: 'text.secondary' }}>Become a tutor for Winter 25&apos;!</Typography>
+            <Typography variant='h3' fontFamily='Hanuman'sx={{color: 'text.secondary' }}>Become a tutor for Fall &apos;25!</Typography>
             <Typography marginTop='1rem' marginBottom='2rem' variant='body1'>Looking to support your peers in Computer Science while enhancing your interpersonal
                                                              and mentorship skills? {isXs ? <><br /><br /></> : ' '}Join our team as a CS Tutor! Moreover, you can earn academic credit
                                                              for your tutoring hours.
@@ -98,7 +98,7 @@ export default function HomePage() {
               See Details
             </Button>
 
-              <Link href="https://forms.gle/xxwsm6TJSZ7zgntx9" target="_blank" style={{ textDecoration: 'none', color: 'white', fontWeight: 'bold' }} >
+              <Link href="https://forms.gle/j8fW1J7xyS9QQtTL7" target="_blank" style={{ textDecoration: 'none', color: 'white', fontWeight: 'bold' }} >
               <Button sx={gradientButtonStyles}>APPLY AS TUTOR</Button>
               </Link>
             </Box>
