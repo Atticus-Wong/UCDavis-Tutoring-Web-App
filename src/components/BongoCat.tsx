@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Box, useMediaQuery, Theme, useTheme } from '@mui/material';
 import Image from 'next/image';
 const BongoCat = () => {
+  // Kartik: This line is for frontend so this isn't a priority
   const [scale, setScale] = useState(1);
 
   const theme = useTheme();
