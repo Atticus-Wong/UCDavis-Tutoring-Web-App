@@ -2,7 +2,7 @@ import { create } from 'zustand';
 
 interface SelectedViewState {
   selectedView: string
-  setSelectedView: (newState: string) => void
+  setSelectedView: (newSelectedView: string) => void
 }
 
 const useSelectedViewStore = create<SelectedViewState>((set) => ({
