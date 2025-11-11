@@ -8,7 +8,7 @@ import Dashboard from './Dashboard';
 import { useSetDataEntries } from '@/src/utils/atom';
 import AttendanceTable from '../tables/AttendanceTable';
 import HelpSessionTable from '../tables/HelpSessionsTable';
-import { useSelectedViewStore } from '@/src/store/selectedViewStore';
+import { useSelectedViewStore } from '@/src/store/AdminViewSelectedStore';
 
 
 
