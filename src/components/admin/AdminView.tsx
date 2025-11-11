@@ -1,5 +1,5 @@
 import { Typography, Box } from '@mui/material';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { getDocs } from 'firebase/firestore';
 import { attendanceCol, helpSessionsCol } from '@/src/utils/firebase';
 import { useSelectedServer, useSetHelpSessionEntries } from '@/src/utils/atom';
