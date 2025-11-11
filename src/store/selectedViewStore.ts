@@ -7,7 +7,7 @@ interface SelectedViewState {
 
 const useSelectedViewStore = create<SelectedViewState>((set) => ({
   selectedView: 'tables',
-  setSelectedView: (newSelectedView) => set(() => ({ selectedView: newSelectedView }))
+  setSelectedView: () => set((state) => ({ selectedView: state.selectedView }))
 }));
 
 export { useSelectedViewStore };
