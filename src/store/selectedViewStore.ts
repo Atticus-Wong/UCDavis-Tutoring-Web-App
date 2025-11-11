@@ -10,6 +10,4 @@ const useSelectedViewStore = create<SelectedViewState>((set) => ({
   setSelectedView: (newSelectedView) => set(() => ({ selectedView: newSelectedView }))
 }));
 
-// Test for pull for Vish
-
 export { useSelectedViewStore };
