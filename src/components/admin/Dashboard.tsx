@@ -18,8 +18,8 @@ type TutorHours = {
 const Dashboard: React.FC<DashboardProps> = ({ attendance, helpSession }) => {
   let averageWaitTime: number = 0;
   let totalHoursTutoredThisWeek: number = 0; 
-  let studentsTutoredTodayGraph: number[] = new Array(24).fill(0);
-  let studentsTutorWeekGraph: number[] = new Array(7).fill(0);
+  const studentsTutoredTodayGraph: number[] = new Array(24).fill(0);
+  const studentsTutorWeekGraph: number[] = new Array(7).fill(0);
 
   const tutorHours = new Map<string, number>();
   const helperNames = new Map<string, string>();

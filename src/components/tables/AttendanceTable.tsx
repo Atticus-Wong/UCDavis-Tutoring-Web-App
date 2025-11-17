@@ -132,34 +132,69 @@ export default function AttendanceTable({ entries }: DataTableProps) {
   };
   // NOTE: asynchronous setState causing issues <- reasoning for using 'first' bool
   const [first, setFirst] = React.useState(true)
-  let updatedEntries = []
-  const updateFirebaseAttendance = async (row: AttendanceRow) => {
-    try {
-      const attendanceRef = doc(attendanceCol, `/${selectedServer?.id}`);
+  // let updatedEntries = []
+  // const updateFirebaseAttendance = async (row: AttendanceRow) => {
+  //   try {
+  //     const attendanceRef = doc(attendanceCol, `/${selectedServer?.id}`);
 
-      const updatedEntry: Attendance = {
-        ...editedEntries[row.id],
-        activeTimeMs: row.activeTimeMs,
-        helpStartUnixMs: row.helpStartUnixMs,
-        helpEndUnixMs: row.helpEndUnixMs,
-        helpedMembers: row.helpedMembers,
-        helper: { displayName: row.helper.displayName, id: tutorIds.find(member => member.displayName === row.helper.displayName)?.id ?? ''}
-      }
-      if (first) {
-        updatedEntries = [...entries]
-        setFirst(false)
-      } else {
-        updatedEntries = [...editedEntries]
+  //     const updatedEntry: Attendance = {
+  //       ...editedEntries[row.id],
+  //       activeTimeMs: row.activeTimeMs,
+  //       helpStartUnixMs: row.helpStartUnixMs,
+  //       helpEndUnixMs: row.helpEndUnixMs,
+  //       helpedMembers: row.helpedMembers,
+  //       helper: { displayName: row.helper.displayName, id: tutorIds.find(member => member.displayName === row.helper.displayName)?.id ?? ''}
+  //     }
+  //     if (first) {
+  //       updatedEntries = [...entries]
+  //       setFirst(false)
+  //     } else {
+  //       updatedEntries = [...editedEntries]
         
+  //     }
+  //     updatedEntries[row.id] = updatedEntry;
+  //     setEditedEntries(updatedEntries);
+  //     await updateDoc(attendanceRef, { entries: updatedEntries})
+  //   } catch (error) {
+  //     console.error('Error updating attendanceCol: ', error);
+  //     throw new Error('Firebase UpdateDoc Failed');
+  //   }
+  // };
+
+const updateFirebaseAttendance = async (row: AttendanceRow) => {
+  try {
+    const attendanceRef = doc(attendanceCol, `/${selectedServer?.id}`);
+
+    const updatedEntry: Attendance = {
+      ...editedEntries[row.id],
+      activeTimeMs: row.activeTimeMs,
+      helpStartUnixMs: row.helpStartUnixMs,
+      helpEndUnixMs: row.helpEndUnixMs,
+      helpedMembers: row.helpedMembers,
+      helper: { 
+        displayName: row.helper.displayName, 
+        id: tutorIds.find(member => member.displayName === row.helper.displayName)?.id ?? '' 
       }
-      updatedEntries[row.id] = updatedEntry;
-      setEditedEntries(updatedEntries);
-      await updateDoc(attendanceRef, { entries: updatedEntries})
-    } catch (error) {
-      console.error('Error updating attendanceCol: ', error);
-      throw new Error('Firebase UpdateDoc Failed');
+    };
+
+    //  FIXED: No variable reassignment inside async function
+    const updatedEntries = first ? [...entries] : [...editedEntries];
+
+    if (first) {
+      setFirst(false);
     }
-  };
+
+    updatedEntries[row.id] = updatedEntry;
+    setEditedEntries(updatedEntries);
+
+    await updateDoc(attendanceRef, { entries: updatedEntries });
+
+  } catch (error) {
+    console.error('Error updating attendanceCol: ', error);
+    throw new Error('Firebase UpdateDoc Failed');
+  }
+};
+
 
   const handleRowModesModelChange = (newRowModesModel: GridRowModesModel) => {
     setRowModesModel(newRowModesModel);
@@ -261,27 +296,26 @@ export default function AttendanceTable({ entries }: DataTableProps) {
         getActions: ({ id }) => {
           const isInEditMode = rowModesModel[id]?.mode === GridRowModes.Edit;
 
-          if (isInEditMode) {
-            return [
-              <GridActionsCellItem
-                icon={<SaveIcon />}
-                key='save'
-                label="Save"
-                sx={{
-                  color: 'primary.main',
-                }}
-                onClick={handleSaveClick(id)}
-              />,
-              <GridActionsCellItem
-                icon={<CancelIcon />}
-                key='cancel'
-                label="Cancel"
-                className="textPrimary"
-                onClick={handleCancelClick(id)}
-                color="inherit"
-              />,
-            ];
-          }
+        if (isInEditMode) {
+          return [
+            <GridActionsCellItem
+              icon={<SaveIcon />}
+              key="save"
+              label="Save"
+              color="primary"    
+              onClick={handleSaveClick(id)}
+            />,
+            <GridActionsCellItem
+              icon={<CancelIcon />}
+              key="cancel"
+              label="Cancel"
+              className="textPrimary"
+              onClick={handleCancelClick(id)}
+              color="inherit"
+            />,
+          ];
+        }
+
 
           return [
             <GridActionsCellItem
