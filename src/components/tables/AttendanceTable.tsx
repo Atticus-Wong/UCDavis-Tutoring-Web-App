@@ -23,6 +23,8 @@ import SessionStats from './SessionStats';
 import { attendanceCol } from '@/src/utils/firebase';
 import { doc, updateDoc } from 'firebase/firestore';
 import { useSelectedServer, useTutorIds } from '@/src/utils/atom';
+import { useEditedEntriesStore } from '@/src/store/AttendanceTableEntryStore';
+
 const paginationModel = { page: 0, pageSize: 5 };
 type DataTableProps = {
   entries: Attendance[];
@@ -52,7 +54,8 @@ interface AttendanceRow extends Attendance {
 // );
 
 export default function AttendanceTable({ entries }: DataTableProps) {
-  const [editedEntries, setEditedEntries] = React.useState(entries);
+  const { editedEntries, setEditedEntries } = useEditedEntriesStore(entries);
+
   const [selectedServer] = useSelectedServer();
   const [tutorIds] = useTutorIds();
   const [rows, setRows] = React.useState<AttendanceRow[]>(
