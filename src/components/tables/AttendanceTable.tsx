@@ -23,7 +23,7 @@ import SessionStats from './SessionStats';
 import { attendanceCol } from '@/src/utils/firebase';
 import { doc, updateDoc } from 'firebase/firestore';
 import { useSelectedServer, useTutorIds } from '@/src/utils/atom';
-import { useEditedEntriesStore } from '@/src/store/AttendanceTableEntryStore';
+import { useAppStore } from '@/src/store';
 
 const paginationModel = { page: 0, pageSize: 5 };
 type DataTableProps = {
@@ -54,7 +54,8 @@ interface AttendanceRow extends Attendance {
 // );
 
 export default function AttendanceTable({ entries }: DataTableProps) {
-  const { editedEntries, setEditedEntries } = useEditedEntriesStore(entries);
+  const { attendanceEditedEntres, setAttendanceEditedEntries } = useAppStore();
+  setAttendanceEditedEntries(entries);
 
   const [selectedServer] = useSelectedServer();
   const [tutorIds] = useTutorIds();
@@ -141,7 +142,7 @@ export default function AttendanceTable({ entries }: DataTableProps) {
       const attendanceRef = doc(attendanceCol, `/${selectedServer?.id}`);
 
       const updatedEntry: Attendance = {
-        ...editedEntries[row.id],
+        ...attendanceEditedEntres[row.id],
         activeTimeMs: row.activeTimeMs,
         helpStartUnixMs: row.helpStartUnixMs,
         helpEndUnixMs: row.helpEndUnixMs,
@@ -152,11 +153,11 @@ export default function AttendanceTable({ entries }: DataTableProps) {
         updatedEntries = [...entries]
         setFirst(false)
       } else {
-        updatedEntries = [...editedEntries]
+        updatedEntries = [...attendanceEditedEntres]
         
       }
       updatedEntries[row.id] = updatedEntry;
-      setEditedEntries(updatedEntries);
+      setAttendanceEditedEntries(updatedEntries);
       await updateDoc(attendanceRef, { entries: updatedEntries})
     } catch (error) {
       console.error('Error updating attendanceCol: ', error);

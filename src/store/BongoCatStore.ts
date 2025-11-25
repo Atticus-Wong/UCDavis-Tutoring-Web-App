@@ -1,5 +1,8 @@
 import { create } from 'zustand';
 
+// Only show separate stores for separate microservices
+// Combine all the different stores into one
+
 interface BongoCatState {
   scale: number
   setScale: (scale: number) => void

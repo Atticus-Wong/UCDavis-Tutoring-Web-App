@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { Box, useMediaQuery, Theme, useTheme } from '@mui/material';
 import Image from 'next/image';
+import { useAppStore } from '../store';
+
 const BongoCat = () => {
-  // Kartik: This line is for frontend so this isn't a priority
-  const [scale, setScale] = useState(1);
+  const { bongoCatScale, setBongoCatScale } = useAppStore();
 
   const theme = useTheme();
   const isXs = useMediaQuery(theme.breakpoints.down('xs'));
@@ -15,7 +16,7 @@ const BongoCat = () => {
       const baseWidth = 1200;
       const currentWidth = window.innerWidth;
       const newScale = Math.max(0.5, Math.min(1, currentWidth / baseWidth));
-      setScale(newScale);
+      setBongoCatScale(newScale);
     };
 
 
@@ -33,7 +34,7 @@ const BongoCat = () => {
       sx={{
         marginTop: {md: '1.5rem'},
         marginLeft: {md: '1.5rem'},
-        transform: {md: `scale(${scale})`},
+        transform: {md: `scale(${bongoCatScale})`},
         transformOrigin: {xs: 'center', sm: 'center', md: 'top-right'},
         transition: 'transform 0.3s ease',
         display: 'flex',

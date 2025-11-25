@@ -1,5 +1,9 @@
 import { atom, useAtom } from 'jotai';
 
+// Migrate to zustand
+// Change components taken in since some are protorical
+// Don't pass using props and instead use hooks to directly get the data at whatever leaf needed
+
 const selectedServer = atom<Server | undefined>(undefined);
 
 export const useSelectedServer = () => useAtom(selectedServer);

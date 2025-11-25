@@ -2,13 +2,13 @@ import { Typography, Box } from '@mui/material';
 import { useEffect } from 'react';
 import { getDocs } from 'firebase/firestore';
 import { attendanceCol, helpSessionsCol } from '@/src/utils/firebase';
-import { useSelectedServer, useSetHelpSessionEntries } from '@/src/utils/atom';
+import { useSelectedServer, useSetHelpSessionEntries } from '@/src/utils/atom';   // Migrate to zustand
 import AdminSelect from '../AdminSelect';
 import Dashboard from './Dashboard';
-import { useSetDataEntries } from '@/src/utils/atom';
+import { useSetDataEntries } from '@/src/utils/atom';   // Migrate to zustand
 import AttendanceTable from '../tables/AttendanceTable';
 import HelpSessionTable from '../tables/HelpSessionsTable';
-import { useSelectedViewStore } from '@/src/store/AdminViewSelectedStore';
+import { useAppStore } from '@/src/store';
 
 
 
@@ -16,7 +16,7 @@ export default function AdminView() {
   const [selectedServer] = useSelectedServer();
   const [attendanceEntries, setAttendanceEntries] = useSetDataEntries();
   const [helpSessionEntries, setHelpSessionEntries] = useSetHelpSessionEntries();
-  const { selectedView, setSelectedView }  = useSelectedViewStore();
+  const { adminSelectedView, setAdminSelectedView } = useAppStore();
 
   useEffect(() => {
     const getFirebaseData = async () => {
@@ -54,13 +54,13 @@ export default function AdminView() {
   return (
     <>
       <AdminSelect 
-        selectedView={selectedView}
-        setSelectedView={setSelectedView}
+        selectedView={adminSelectedView}
+        setSelectedView={setAdminSelectedView}
       />
       <Typography fontWeight="bold" fontSize="2rem" textAlign="center">
         Admin View
       </Typography>
-      {selectedView === 'tables' ? (
+      {adminSelectedView === 'tables' ? (
         <>
           <AttendanceTable entries={attendanceEntries} />
           <HelpSessionTable entries={helpSessionEntries} />
