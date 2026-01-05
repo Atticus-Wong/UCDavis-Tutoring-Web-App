@@ -1,5 +1,5 @@
 pipeline {
-    agent { label 'default-docker' }
+    agent { label 'docker-npm' }
 
     environment {
         DOCKER_IMAGE = 'atticuswong174/cs-tutoring:latest'
