@@ -60,8 +60,6 @@ pipeline {
                             ssh -i ${SSH_KEY} -o StrictHostKeyChecking=no ${EC2_USER}@${EC2_HOST} '
                                 cd website
                                 docker pull ${DOCKER_IMAGE}
-                                docker compose down || true
-                                docker compose up -d
                             '
                         """
                     }
