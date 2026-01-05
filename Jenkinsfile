@@ -31,26 +31,31 @@ pipeline {
             }
         }
 
-        stage('Build and Push Docker Image') {
-            steps {
-                script {
-                    withCredentials([usernamePassword(credentialsId: DOCKER_CREDENTIALS_ID, passwordVariable: 'DOCKER_PASS', usernameVariable: 'DOCKER_USER')]) {
-                        sh 'echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin'
-                        
-                        // Ensure buildx is set up
-                        sh 'docker buildx create --use || true'
-                        
-                        sh """
-                            docker buildx build \
-                            --platform linux/amd64,linux/arm64 \
-                            -t ${DOCKER_IMAGE} \
-                            --push \
-                            .
-                        """
-                    }
-                }
-            }
-        }
+				stage('Build and Push Docker Image') {
+						steps {
+								script {
+										withCredentials([usernamePassword(credentialsId: DOCKER_CREDENTIALS_ID, passwordVariable: 'DOCKER_PASS', usernameVariable: 'DOCKER_USER')]) {
+												sh 'echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin'
+												
+												// 1. Install QEMU emulators for multi-platform support
+												sh 'docker run --privileged --rm tonistiigi/binfmt --install all'
+												
+												// 2. Create and switch to a new builder that supports multi-platform
+												sh 'docker buildx create --name mybuilder --use || docker buildx use mybuilder'
+												sh 'docker buildx inspect --bootstrap'
+												
+												// 3. Execute the build
+												sh """
+														docker buildx build \
+														--platform linux/amd64,linux/arm64 \
+														-t ${DOCKER_IMAGE} \
+														--push \
+														.
+												"""
+										}
+								}
+						}
+				}
 
         stage('Deploy to EC2') {
             steps {
