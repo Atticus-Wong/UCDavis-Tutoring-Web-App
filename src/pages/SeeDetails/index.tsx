@@ -37,7 +37,7 @@ export default function SeeRequirements() {
           { !isMd &&
             <Box>
               <Typography fontFamily='Inter' fontSize={12} marginBottom={1}>Ready to be a tutor?</Typography>
-              <Button sx={{ ...gradientButtonStyles, width: 'auto', }} onClick={() => window.open('https://forms.gle/j8fW1J7xyS9QQtTL7', '_blank')} >
+              <Button sx={{ ...gradientButtonStyles, width: 'auto', }} onClick={() => window.open('https://docs.google.com/forms/d/e/1FAIpQLSe2Z3tba-UxkcI1KzCH2ACBKLIcaAWGbDcobB96lhKV_UwDlA/viewform?usp=header', '_blank')} >
                 APPLY AS TUTOR
               </Button>
             </Box>
