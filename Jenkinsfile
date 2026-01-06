@@ -8,6 +8,9 @@ pipeline {
         SSH_CREDENTIALS_ID = 'cstutor-ssh-key'
         EC2_USER = 'ubuntu' 
         EC2_HOST = 'ec2-18-191-4-189.us-east-2.compute.amazonaws.com'
+        
+        // Define these in Jenkins (Pipeline -> Environment) or via credentials
+        // NEXT_PUBLIC_FIREBASE_API_KEY = ...
     }
 
     stages {
@@ -45,14 +48,20 @@ pipeline {
 												sh 'docker buildx inspect --bootstrap'
 												
 												// 3. Execute the build
-												sh """
-														docker buildx build \
-														--platform linux/amd64,linux/arm64 \
-														-t ${DOCKER_IMAGE} \
-														--push \
-														.
-												"""
-										}
+												                        sh """
+												                            docker buildx build \
+												                            --platform linux/amd64,linux/arm64 \
+												                            -t ${DOCKER_IMAGE} \
+												                            --build-arg NEXT_PUBLIC_FIREBASE_API_KEY=${env.NEXT_PUBLIC_FIREBASE_API_KEY} \
+												                            --build-arg NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=${env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN} \
+												                            --build-arg NEXT_PUBLIC_FIREBASE_PROJECT_ID=${env.NEXT_PUBLIC_FIREBASE_PROJECT_ID} \
+												                            --build-arg NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=${env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET} \
+												                            --build-arg NEXT_PUBLIC_FIREBASE_SENDER_ID=${env.NEXT_PUBLIC_FIREBASE_SENDER_ID} \
+												                            --build-arg NEXT_PUBLIC_FIREBASE_APP_ID=${env.NEXT_PUBLIC_FIREBASE_APP_ID} \
+												                            --build-arg NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID=${env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID} \
+												                            --push \
+												                            .
+												                        """										}
 								}
 						}
 				}
