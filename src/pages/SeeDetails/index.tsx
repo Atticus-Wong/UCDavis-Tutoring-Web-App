@@ -130,7 +130,7 @@ export default function SeeRequirements() {
               marginTop: '1rem',
               fontSize: '1rem'
             }}
-            onClick={() => window.open('https://forms.gle/j8fW1J7xyS9QQtTL7', '_blank')}
+            onClick={() => window.open('https://docs.google.com/forms/u/1/d/e/1FAIpQLSe2Z3tba-UxkcI1KzCH2ACBKLIcaAWGbDcobB96lhKV_UwDlA/viewform?usp=header', '_blank')}
           >
             APPLY AS TUTOR
           </Button>

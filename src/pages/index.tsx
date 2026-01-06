@@ -98,7 +98,7 @@ export default function HomePage() {
               See Details
             </Button>
 
-              <Link href="https://forms.gle/j8fW1J7xyS9QQtTL7" target="_blank" style={{ textDecoration: 'none', color: 'white', fontWeight: 'bold' }} >
+              <Link href="https://docs.google.com/forms/d/e/1FAIpQLSe2Z3tba-UxkcI1KzCH2ACBKLIcaAWGbDcobB96lhKV_UwDlA/viewform" target="_blank" style={{ textDecoration: 'none', color: 'white', fontWeight: 'bold' }} >
               <Button sx={gradientButtonStyles}>APPLY AS TUTOR</Button>
               </Link>
             </Box>
