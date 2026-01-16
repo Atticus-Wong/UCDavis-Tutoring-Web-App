@@ -1,3 +1,4 @@
+import React from "react";
 import {
   Html,
   Head,
@@ -54,7 +55,7 @@ Document.getInitialProps = async (ctx: DocumentContext) => {
     ...initialProps,
     styles: [
       ...emotionStyleTags,
-      ...initialProps.styles
+      ...React.Children.toArray(initialProps.styles)
     ],
   }
 };
